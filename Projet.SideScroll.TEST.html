@@ -50,6 +50,7 @@ function preload ()
     this.load.image('ground', 'assets/platform.png');
     //Ennemi provisoire 
     this.load.image('3dsmax','assets/ennemi.png');
+    this.load.image('attaque','assets/attaque.png');
     
     this.load.spritesheet('dude', 'assets/dude.png', { frameWidth: 32, frameHeight: 48 });
 }
@@ -75,6 +76,12 @@ function create ()
 
     // The player and its settings
     player = this.physics.add.sprite(300, 450, 'dude');
+    atk = this.physics.add.group();
+    atkDroite = atk.create (350,450,'attaque');
+    //atkDroite.disableBody(true,true);
+    atkGauche = atk.create (250,450,'attaque');
+    //atkGauche.disableBody(true,true);
+
     //Ennemi provisoire 
     ennemi = this.physics.add.group();
 
@@ -119,6 +126,8 @@ function create ()
     this.physics.add.collider(ennemi, platforms);
     this.physics.add.collider(player, ennemi, degat);
     this.physics.add.collider(player, glace);
+    this.physics.add.collider(ennemi, atkDroite);
+    this.physics.add.collider(ennemi, atkGauche);
 
 
 }
@@ -158,7 +167,16 @@ function update ()
     }
     invulnerable++;
     deplacementEnnemi();
+    deplacementHitboxAttaque();
 }
+function deplacementHitboxAttaque(){
+    atkDroite.body.position.x = (player.body.position.x + 32);
+    atkDroite.body.position.y = player.body.position.y;
+    atkGauche.body.position.x = (player.body.position.x - 64);
+    atkGauche.body.position.y = player.body.position.y;
+
+}
+
 function deplacementEnnemi(){
    
     
@@ -171,9 +189,9 @@ function deplacementEnnemi(){
     }
 
     // à activer si on veut que l'ennemi cesse de nous suivre 
-    /*else{
+    else{
         ennemi.setVelocityX(0);
-    }*/
+    }
 
 }
 function degat ()
