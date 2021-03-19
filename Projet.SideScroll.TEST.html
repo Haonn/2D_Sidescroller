@@ -34,13 +34,15 @@ var config = {
 
 var player;
 var platforms;
-var glace;
+var neige;
 var cursors;
 var gameOver = false;
 var vie = 3;
 var vieText;
 var invulnerable = 120;
 var ennemi;
+var ralenti = false;
+var nonFriction = false;
 
 var game = new Phaser.Game(config);
 
@@ -63,14 +65,14 @@ function create ()
     //  The platforms group contains the ground and the 2 ledges we can jump on
     platforms = this.physics.add.staticGroup();
 
-    glace = this.physics.add.staticGroup();
+    neige = this.physics.add.staticGroup();
 
     //  Here we create the ground.
     //  Scale it to fit the width of the game (the original sprite is 400x32 in size)
     platforms.create(400, 568, 'ground').setScale(2).refreshBody();
 
     //  Now let's create some ledges
-    glace.create(600, 400, 'ground').setTint(0xff0000);
+    neige.create(600, 400, 'ground').setTint(0xff0000);
     platforms.create(50, 250, 'ground');
     platforms.create(750, 220, 'ground');
 
@@ -122,10 +124,10 @@ function create ()
 
 
     //  Colliders
-    this.physics.add.collider(player, platforms);
+    this.physics.add.collider(player, platforms, resetDeplacement);
     this.physics.add.collider(ennemi, platforms);
     this.physics.add.collider(player, ennemi, degat);
-    this.physics.add.collider(player, glace);
+    this.physics.add.collider(player, neige, ralentissement );
     this.physics.add.collider(ennemi, atkDroite);
     this.physics.add.collider(ennemi, atkGauche);
 
@@ -134,7 +136,7 @@ function create ()
 
 function update ()
 {
-    if (player.body.position.y < 250 )// Vent en haut de la carte
+    /*if (player.body.position.y < 250 )// Vent en haut de la carte
     {
         player.setGravityX(5000)
     }
@@ -145,6 +147,9 @@ function update ()
     else // Absence de vent en bas de la carte 
     {
         player.setGravityX(0)
+    }*/
+    if (!player.body.touching.down){
+        resetDeplacement();
     }
 
     if (gameOver)
@@ -157,15 +162,33 @@ function update ()
 
     if (cursors.left.isDown)
     {
-        player.setVelocityX(-160);
+        if (ralenti == false && nonFriction == false)
+        {
+            player.setVelocityX(-160);
 
-        player.anims.play('left', true);
+            player.anims.play('left', true);
+        }
+        else if (ralenti == true)
+        {
+            player.setVelocityX(-100);
+
+            player.anims.play('left', true );
+        }
     }
     else if (cursors.right.isDown)
     {
-        player.setVelocityX(160);
+        if (ralenti == false && nonFriction == false )
+        {
+            player.setVelocityX(160);
 
-        player.anims.play('right', true);
+            player.anims.play('right', true);
+        }
+        else if (ralenti == true)
+        {
+            player.setVelocityX(100);
+
+            player.anims.play('right', true);
+        }
     }
     else
     {
@@ -222,6 +245,16 @@ function degat ()
             gameOver = true;
         }
     }
+}
+function resetDeplacement()
+{
+    nonFriction = false;
+    ralenti = false;
+}
+function ralentissement()
+{
+    nonFriction = false;
+    ralenti = true;
 }
 
 </script>

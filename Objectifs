@@ -13,14 +13,14 @@ X  Ayant un comportement déterminé
 
   Rebond sur les parois rocheuses
   Inertie sur la glace
-  Ralentissement dans la neige
+  X Ralentissement dans la neige
   Pièges mortels instantanément 
   Power up = résister au vent 
   Scrolling vertical et horizontal
   Mouvement spécial 
   ///////////////////////////////////////////////////////////
   Comportement des ennemis évoluant selon le Joueur (gauche ou droite) 
-  Mécanique de vent 
+  X Mécanique de vent 
   Checkpoints 
   Possibilité de tomber en bas mais pas en dessous du dernier checkpoint 
   Grappin vers le haut 
