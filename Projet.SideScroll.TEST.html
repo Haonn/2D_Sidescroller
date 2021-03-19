@@ -134,6 +134,19 @@ function create ()
 
 function update ()
 {
+    if (player.body.position.y < 250 )// Vent en haut de la carte
+    {
+        player.setGravityX(5000)
+    }
+    else if (player.body.position.y < 350) // Vent au milieu de la carte 
+    {
+        player.setGravityX(2500)
+    }
+    else // Absence de vent en bas de la carte 
+    {
+        player.setGravityX(0)
+    }
+
     if (gameOver)
     {
         player.setTint(0xff0000)
@@ -169,7 +182,7 @@ function update ()
     deplacementEnnemi();
     deplacementHitboxAttaque();
 }
-function deplacementHitboxAttaque(){
+function deplacementHitboxAttaque(){ //Pour que les hitbox d'attaque restent collées au joueur
     atkDroite.body.position.x = (player.body.position.x + 32);
     atkDroite.body.position.y = player.body.position.y;
     atkGauche.body.position.x = (player.body.position.x - 64);
@@ -177,7 +190,7 @@ function deplacementHitboxAttaque(){
 
 }
 
-function deplacementEnnemi(){
+function deplacementEnnemi(){ //Pour que l'ennemi suive le joueur
    
     
     if (player.body.position.x < ennemi.body.position.x && player.body.position.x > (ennemi.body.position.x-150) )
@@ -188,7 +201,7 @@ function deplacementEnnemi(){
         ennemi.setVelocityX(75);
     }
 
-    // à activer si on veut que l'ennemi cesse de nous suivre 
+    //Pour que l'ennemi cesse de nous suivre quand on est trop loin 
     else{
         ennemi.setVelocityX(0);
     }

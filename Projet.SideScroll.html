@@ -125,6 +125,19 @@ function create ()
 
 function update ()
 {
+    if (player.body.position.y < 250 ) // Vent en haut de la carte
+    {
+        player.setGravityX(5000)
+    }
+    else if (player.body.position.y < 350) // Vent au milieu de la carte 
+    {
+        player.setGravityX(2500)
+    }
+    else // Absence de vent en bas de la carte
+    {
+        player.setGravityX(0)
+    }
+
     if (gameOver)
     {
         player.setTint(0xff0000)
