@@ -35,6 +35,7 @@ var config = {
 var player;
 var platforms;
 var neige;
+var glace;
 var cursors;
 var gameOver = false;
 var vie = 3;
@@ -43,6 +44,9 @@ var invulnerable = 120;
 var ennemi;
 var ralenti = false;
 var nonFriction = false;
+var haut = 250;
+var bas = 350;
+
 
 var game = new Phaser.Game(config);
 
@@ -66,6 +70,7 @@ function create ()
     platforms = this.physics.add.staticGroup();
 
     neige = this.physics.add.staticGroup();
+    glace = this.physics.add.staticGroup();
 
     //  Here we create the ground.
     //  Scale it to fit the width of the game (the original sprite is 400x32 in size)
@@ -73,7 +78,7 @@ function create ()
 
     //  Now let's create some ledges
     neige.create(600, 400, 'ground').setTint(0xff0000);
-    platforms.create(50, 250, 'ground');
+    glace.create(60, 250, 'ground').setTint(0x0000ff);
     platforms.create(750, 220, 'ground');
 
     // The player and its settings
@@ -128,6 +133,7 @@ function create ()
     this.physics.add.collider(ennemi, platforms);
     this.physics.add.collider(player, ennemi, degat);
     this.physics.add.collider(player, neige, ralentissement );
+    this.physics.add.collider(player, glace, enleverFriction );
     //this.physics.add.collider(ennemi, atkDroite);
     //this.physics.add.collider(ennemi, atkGauche);
 
@@ -136,18 +142,19 @@ function create ()
 
 function update ()
 {
-    /*if (player.body.position.y < 250 )// Vent en haut de la carte
+    if (player.body.position.y < haut && nonFriction == false)// Vent en haut de la carte
     {
         player.setGravityX(5000)
     }
-    else if (player.body.position.y < 350) // Vent au milieu de la carte 
+    else if (player.body.position.y < bas &&  nonFriction == false) // Vent au milieu de la carte 
     {
         player.setGravityX(2500)
     }
     else // Absence de vent en bas de la carte 
     {
         player.setGravityX(0)
-    }*/
+    }
+
     if (!player.body.touching.down){
         resetDeplacement();
     }
@@ -174,6 +181,12 @@ function update ()
 
             player.anims.play('left', true );
         }
+        else if (nonFriction == true)
+        {
+            player.setAccelerationX(-100);
+
+            player.anims.play('left',true);
+        }
     }
     else if (cursors.right.isDown)
     {
@@ -189,12 +202,25 @@ function update ()
 
             player.anims.play('right', true);
         }
+        else if (nonFriction == true )
+        {
+            player.setAccelerationX(100);
+
+            player.anims.play('right', true);
+        }
     }
     else
     {
-        player.setVelocityX(0);
+        if(nonFriction == false ){
+            player.setVelocityX(0);
 
-        player.anims.play('turn');
+            player.anims.play('turn');
+        }
+        else if (nonFriction == true)
+        {
+            player.anims.play('turn');
+            player.setAccelerationX(0);
+        }
     }
 
     if (cursors.up.isDown && player.body.touching.down)
@@ -251,6 +277,14 @@ function resetDeplacement()
     nonFriction = false;
     ralenti = false;
 }
+
+function enleverFriction()
+{
+    ralenti = false;
+    nonFriction = true;
+    player.setGravityX(0);
+}
+
 function ralentissement()
 {
     nonFriction = false;
