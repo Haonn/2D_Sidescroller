@@ -36,6 +36,7 @@ var player;
 var platforms;
 var neige;
 var glace;
+var roche;
 var cursors;
 var gameOver = false;
 var vie = 3;
@@ -44,6 +45,8 @@ var invulnerable = 120;
 var ennemi;
 var ralenti = false;
 var nonFriction = false;
+var compteurRebond = 50;
+var rebond = false;
 var haut = 250;
 var bas = 350;
 
@@ -54,6 +57,9 @@ function preload ()
 {
     this.load.image('sky', 'assets/sky.png');
     this.load.image('ground', 'assets/platform.png');
+    this.load.image('neige','assets/neige.png')
+    this.load.image('glace','assets/glace.png')
+    this.load.image('roche','assets/roche.png')
     //Ennemi provisoire 
     this.load.image('3dsmax','assets/ennemi.png');
     //this.load.image('attaque','assets/attaque.png');
@@ -68,7 +74,7 @@ function create ()
 
     //  The platforms group contains the ground and the 2 ledges we can jump on
     platforms = this.physics.add.staticGroup();
-
+    roche = this.physics.add.staticGroup();
     neige = this.physics.add.staticGroup();
     glace = this.physics.add.staticGroup();
 
@@ -77,8 +83,9 @@ function create ()
     platforms.create(400, 568, 'ground').setScale(2).refreshBody();
 
     //  Now let's create some ledges
-    neige.create(600, 400, 'ground').setTint(0xff0000);
-    glace.create(60, 250, 'ground').setTint(0x0000ff);
+    roche.create(275, 435,'roche')
+    neige.create(600, 400, 'neige');
+    glace.create(60, 250, 'glace');
     platforms.create(750, 220, 'ground');
 
     // The player and its settings
@@ -130,7 +137,13 @@ function create ()
 
     //  Colliders
     this.physics.add.collider(player, platforms, resetDeplacement);
+
+    //Colliders ennemis
     this.physics.add.collider(ennemi, platforms);
+    this.physics.add.collider(ennemi, neige);
+    this.physics.add.collider(ennemi, glace);
+    this.physics.add.collider(ennemi, roche);
+    this.physics.add.collider(player, roche, possibiliteRebond);
     this.physics.add.collider(player, ennemi, degat);
     this.physics.add.collider(player, neige, ralentissement );
     this.physics.add.collider(player, glace, enleverFriction );
@@ -262,9 +275,21 @@ function update ()
         }
     }
 
-    if (cursors.up.isDown && player.body.touching.down)
+    if (cursors.up.isDown)
     {
-        player.setVelocityY(-330);
+        if (player.body.touching.down)
+        {
+            player.setVelocityY(-330);
+        }
+        else if (rebond == true)
+        {
+            player.setVelocityY(-400);
+        }
+    }
+    compteurRebond++;
+    if (compteurRebond < 50)
+    {
+        rebond = false;
     }
     invulnerable++;
     deplacementEnnemi();
@@ -281,12 +306,12 @@ function update ()
 function deplacementEnnemi(){ //Pour que l'ennemi suive le joueur
    
     
-    if (player.body.position.x < ennemi.body.position.x && player.body.position.x > (ennemi.body.position.x-150) )
+    if (player.body.position.x < ennemi.body.position.x && player.body.position.x > (ennemi.body.position.x-500) )
     {
-        ennemi.setVelocityX(-75);        
+        ennemi.setVelocityX(-180);        
     }
-    else if (player.body.position.x > ennemi.body.position.x && player.body.position.x < (ennemi.body.position.x+100) ){
-        ennemi.setVelocityX(75);
+    else if (player.body.position.x > ennemi.body.position.x && player.body.position.x < (ennemi.body.position.x+450) ){
+        ennemi.setVelocityX(180);
     }
 
     //Pour que l'ennemi cesse de nous suivre quand on est trop loin 
@@ -315,6 +340,14 @@ function resetDeplacement()
 {
     nonFriction = false;
     ralenti = false;
+}
+
+function possibiliteRebond()
+{
+    ralenti = false;
+    nonFriction = false;
+    rebond = true;
+    compteurRebond = 0;
 }
 
 function enleverFriction()

@@ -34,13 +34,22 @@ var config = {
 
 var player;
 var platforms;
+var neige;
 var glace;
+var roche;
 var cursors;
 var gameOver = false;
 var vie = 3;
 var vieText;
 var invulnerable = 120;
 var ennemi;
+var ralenti = false;
+var nonFriction = false;
+var compteurRebond = 50;
+var rebond = false;
+var haut = 250;
+var bas = 350;
+
 
 var game = new Phaser.Game(config);
 
@@ -48,8 +57,12 @@ function preload ()
 {
     this.load.image('sky', 'assets/sky.png');
     this.load.image('ground', 'assets/platform.png');
+    this.load.image('neige','assets/neige.png')
+    this.load.image('glace','assets/glace.png')
+    this.load.image('roche','assets/roche.png')
     //Ennemi provisoire 
     this.load.image('3dsmax','assets/ennemi.png');
+    //this.load.image('attaque','assets/attaque.png');
     
     this.load.spritesheet('dude', 'assets/dude.png', { frameWidth: 32, frameHeight: 48 });
 }
@@ -61,7 +74,8 @@ function create ()
 
     //  The platforms group contains the ground and the 2 ledges we can jump on
     platforms = this.physics.add.staticGroup();
-
+    roche = this.physics.add.staticGroup();
+    neige = this.physics.add.staticGroup();
     glace = this.physics.add.staticGroup();
 
     //  Here we create the ground.
@@ -69,12 +83,19 @@ function create ()
     platforms.create(400, 568, 'ground').setScale(2).refreshBody();
 
     //  Now let's create some ledges
-    glace.create(600, 400, 'ground').setTint(0xff0000);
-    platforms.create(50, 250, 'ground');
+    roche.create(275, 435,'roche')
+    neige.create(600, 400, 'neige');
+    glace.create(60, 250, 'glace');
     platforms.create(750, 220, 'ground');
 
     // The player and its settings
     player = this.physics.add.sprite(300, 450, 'dude');
+    //atk = this.physics.add.group();
+    //atkDroite = atk.create (350,450,'attaque');
+    //atkDroite.disableBody(true,true);
+    //atkGauche = atk.create (250,450,'attaque');
+    //atkGauche.disableBody(true,true);
+
     //Ennemi provisoire 
     ennemi = this.physics.add.group();
 
@@ -115,27 +136,40 @@ function create ()
 
 
     //  Colliders
-    this.physics.add.collider(player, platforms);
+    this.physics.add.collider(player, platforms, resetDeplacement);
+
+    //Colliders ennemis
     this.physics.add.collider(ennemi, platforms);
+    this.physics.add.collider(ennemi, neige);
+    this.physics.add.collider(ennemi, glace);
+    this.physics.add.collider(ennemi, roche);
+    this.physics.add.collider(player, roche, possibiliteRebond);
     this.physics.add.collider(player, ennemi, degat);
-    this.physics.add.collider(player, glace);
+    this.physics.add.collider(player, neige, ralentissement );
+    this.physics.add.collider(player, glace, enleverFriction );
+    //this.physics.add.collider(ennemi, atkDroite);
+    //this.physics.add.collider(ennemi, atkGauche);
 
 
 }
 
 function update ()
 {
-    if (player.body.position.y < 250 ) // Vent en haut de la carte
+    if (player.body.position.y < haut && nonFriction == false)// Vent en haut de la carte
     {
         player.setGravityX(5000)
     }
-    else if (player.body.position.y < 350) // Vent au milieu de la carte 
+    else if (player.body.position.y < bas &&  nonFriction == false) // Vent au milieu de la carte 
     {
         player.setGravityX(2500)
     }
-    else // Absence de vent en bas de la carte
+    else // Absence de vent en bas de la carte 
     {
         player.setGravityX(0)
+    }
+
+    if (!player.body.touching.down){
+        resetDeplacement();
     }
 
     if (gameOver)
@@ -148,45 +182,142 @@ function update ()
 
     if (cursors.left.isDown)
     {
-        player.setVelocityX(-160);
+        if (ralenti == false && nonFriction == false)
+        {
+            player.setVelocityX(-160);
 
-        player.anims.play('left', true);
+            player.anims.play('left', true);
+        }
+        else if (ralenti == true)
+        {
+            player.setVelocityX(-100);
+
+            player.anims.play('left', true );
+        }
+        else if (nonFriction == true )
+        {
+            if (player.body.position.y < haut)
+            {
+                player.anims.play('left',true);
+                player.setAccelerationX(-60);
+            }
+            else if (player.body.position.y < bas)
+            {
+                player.anims.play('left',true);
+                player.setAccelerationX(-80);
+            }
+            else 
+            {
+                player.anims.play('left',true);
+                player.setAccelerationX(-100);
+            }
+
+        }
     }
     else if (cursors.right.isDown)
     {
-        player.setVelocityX(160);
+        if (ralenti == false && nonFriction == false )
+        {
+            player.setVelocityX(160);
 
-        player.anims.play('right', true);
+            player.anims.play('right', true);
+        }
+        else if (ralenti == true)
+        {
+            player.setVelocityX(100);
+
+            player.anims.play('right', true);
+        }
+        else if (nonFriction == true )
+        {
+            if (player.body.position.y < haut)
+            {
+                player.anims.play('right',true);
+                player.setAccelerationX(140);
+            }
+            else if (player.body.position.y < bas)
+            {
+                player.anims.play('right',true);
+                player.setAccelerationX(120);
+            }
+            else 
+            {
+                player.anims.play('right',true);
+                player.setAccelerationX(100);
+            }
+
+        }
     }
     else
     {
-        player.setVelocityX(0);
+        if(nonFriction == false ){
+            player.setVelocityX(0);
 
-        player.anims.play('turn');
+            player.anims.play('turn');
+        }
+        else if (nonFriction == true)
+        {
+            if (player.body.position.y < haut)
+            {
+                player.anims.play('turn');
+                player.setAccelerationX(40);
+            }
+            else if (player.body.position.y < bas)
+            {
+                player.anims.play('turn');
+                player.setAccelerationX(20);
+            }
+            else
+            {
+                player.anims.play('turn');
+                player.setAccelerationX(0);
+            }
+        }
     }
 
-    if (cursors.up.isDown && player.body.touching.down)
+    if (cursors.up.isDown)
     {
-        player.setVelocityY(-330);
+        if (player.body.touching.down)
+        {
+            player.setVelocityY(-330);
+        }
+        else if (rebond == true)
+        {
+            player.setVelocityY(-400);
+        }
+    }
+    compteurRebond++;
+    if (compteurRebond < 50)
+    {
+        rebond = false;
     }
     invulnerable++;
     deplacementEnnemi();
+    //deplacementHitboxAttaque();
 }
-function deplacementEnnemi(){
+/*function deplacementHitboxAttaque(){ //Pour que les hitbox d'attaque restent collées au joueur
+    atkDroite.body.position.x = (player.body.position.x + 32);
+    atkDroite.body.position.y = player.body.position.y;
+    atkGauche.body.position.x = (player.body.position.x - 64);
+    atkGauche.body.position.y = player.body.position.y;
+
+}*/
+
+function deplacementEnnemi(){ //Pour que l'ennemi suive le joueur
    
     
-    if (player.body.position.x < ennemi.body.position.x && player.body.position.x > (ennemi.body.position.x-150) )
+    if (player.body.position.x < ennemi.body.position.x && player.body.position.x > (ennemi.body.position.x-500) )
     {
-        ennemi.setVelocityX(-75);        
+        ennemi.setVelocityX(-180);        
     }
-    else if (player.body.position.x > ennemi.body.position.x && player.body.position.x < (ennemi.body.position.x+100) ){
-        ennemi.setVelocityX(75);
+    else if (player.body.position.x > ennemi.body.position.x && player.body.position.x < (ennemi.body.position.x+450) ){
+        ennemi.setVelocityX(180);
     }
 
-    // à activer si on veut que l'ennemi cesse de nous suivre 
-    /*else{
+    //Pour que l'ennemi cesse de nous suivre quand on est trop loin 
+    else{
         ennemi.setVelocityX(0);
-    }*/
+    }
 
 }
 function degat ()
@@ -204,6 +335,32 @@ function degat ()
             gameOver = true;
         }
     }
+}
+function resetDeplacement()
+{
+    nonFriction = false;
+    ralenti = false;
+}
+
+function possibiliteRebond()
+{
+    ralenti = false;
+    nonFriction = false;
+    rebond = true;
+    compteurRebond = 0;
+}
+
+function enleverFriction()
+{
+    ralenti = false;
+    nonFriction = true;
+    player.setGravityX(0);
+}
+
+function ralentissement()
+{
+    nonFriction = false;
+    ralenti = true;
 }
 
 </script>
