@@ -62,7 +62,7 @@ function preload ()
     this.load.image('roche','assets/roche.png')
     //Ennemi provisoire 
     this.load.image('3dsmax','assets/ennemi.png');
-    //this.load.image('attaque','assets/attaque.png');
+    this.load.image('attaque','assets/attaque.png');
     
     this.load.spritesheet('dude', 'assets/dude.png', { frameWidth: 32, frameHeight: 48 });
 }
@@ -90,10 +90,10 @@ function create ()
 
     // The player and its settings
     player = this.physics.add.sprite(300, 450, 'dude');
-    //atk = this.physics.add.group();
-    //atkDroite = atk.create (350,450,'attaque');
+    atk = this.physics.add.group();
+    atkDroite = atk.create (350,450,'attaque');
     //atkDroite.disableBody(true,true);
-    //atkGauche = atk.create (250,450,'attaque');
+    atkGauche = atk.create (250,450,'attaque');
     //atkGauche.disableBody(true,true);
 
     //Ennemi provisoire 
@@ -147,8 +147,8 @@ function create ()
     this.physics.add.collider(player, ennemi, degat);
     this.physics.add.collider(player, neige, ralentissement );
     this.physics.add.collider(player, glace, enleverFriction );
-    //this.physics.add.collider(ennemi, atkDroite);
-    //this.physics.add.collider(ennemi, atkGauche);
+    this.physics.add.overlap(atkDroite, ennemi, mortEnnemi,null,this);
+    this.physics.add.overlap(atkGauche, ennemi, mortEnnemi,null,this);
 
 
 }
@@ -293,15 +293,19 @@ function update ()
     }
     invulnerable++;
     deplacementEnnemi();
-    //deplacementHitboxAttaque();
+    deplacementHitboxAttaque();
 }
-/*function deplacementHitboxAttaque(){ //Pour que les hitbox d'attaque restent collées au joueur
-    atkDroite.body.position.x = (player.body.position.x + 32);
-    atkDroite.body.position.y = player.body.position.y;
-    atkGauche.body.position.x = (player.body.position.x - 64);
-    atkGauche.body.position.y = player.body.position.y;
+function deplacementHitboxAttaque(){ //Pour que les hitbox d'attaque restent collées au joueur
+    atkDroite.x = (player.body.position.x +64);//l'ajout corresponds à 2x la largeur du player
+    atkDroite.y = (player.body.position.y + 24);//l'ajout corresponds à 1/2 la hauteur du player
+    atkGauche.x = (player.body.position.x - 32);//l'ajout corresponds à -1x la largeur du player
+    atkGauche.y = (player.body.position.y +24);//l'ajout corresponds à 1/2x la hauteur du player
+    atkDroite.body.position.x = (player.body.position.x +32);//l'ajout corresponds à la largeur du player
+    atkDroite.body.position.y = (player.body.position.y);
+    atkGauche.body.position.x = (player.body.position.x -64);//l'ajout corresponds à -2x la largeur du player
+    atkGauche.body.position.y = (player.body.position.y);
 
-}*/
+}
 
 function deplacementEnnemi(){ //Pour que l'ennemi suive le joueur
    
@@ -361,6 +365,14 @@ function ralentissement()
 {
     nonFriction = false;
     ralenti = true;
+}
+
+function mortEnnemi(player,ennemi)
+{
+    if(cursors.space.isDown)
+    {
+        ennemi.disableBody(true,true);
+    }
 }
 
 </script>
