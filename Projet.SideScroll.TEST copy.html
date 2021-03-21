@@ -50,7 +50,8 @@ var compteurRebond = 50;
 var rebond = false;
 var haut = 250;
 var bas = 350;
-
+var grappin;
+var timerGrappin = 0;
 
 var game = new Phaser.Game(config);
 
@@ -68,6 +69,7 @@ function preload ()//----------------------------------------
     this.load.image('attaque','assets/attaque.png'); 
     //Player----------
     this.load.spritesheet('dude', 'assets/dude.png', { frameWidth: 32, frameHeight: 48 });
+    this.load.image('grappin', 'assets/grappin.png');
 }
 
 function create ()//----------------------------------------
@@ -76,12 +78,13 @@ function create ()//----------------------------------------
     this.add.image(400, 300, 'sky');
 
     // Player et ses hitbox ----------
-    player = this.physics.add.sprite(300, 450, 'dude');
+    player = this.physics.add.sprite(600, 450, 'dude');
     atk = this.physics.add.group();
     atkDroite = atk.create (350,450,'attaque');
     //atkDroite.disableBody(true,true);
     atkGauche = atk.create (250,450,'attaque');
     //atkGauche.disableBody(true,true);
+    grappin = this.physics.add.image(0,0,'grappin');
 
     //  Initialisation plateformes ----------
     platforms = this.physics.add.staticGroup();
@@ -95,15 +98,15 @@ function create ()//----------------------------------------
     //  Plateformes ----------
     roche.create(275, 435,'roche')
     neige.create(600, 400, 'neige');
-    neige.create(600, 550, 'neige');
+    //neige2.create(600, 550, 'neige');
     glace.create(60, 250, 'glace');
     platforms.create(750, 220, 'ground');
 
     //Création des ennemis----------- 
     ennemis = this.physics.add.group();
 
-    ennemi = ennemis.create( 0, 300, '3dsmax');
-    ennemi = ennemis.create( 20, 300, '3dsmax');
+    ennemi = ennemis.create( 100, 300, '3dsmax');
+    ennemi2 = ennemis.create( 20, 300, '3dsmax');
     
     ennemi.setCollideWorldBounds(true);
     
@@ -146,6 +149,7 @@ function create ()//----------------------------------------
 
     //Colliders ennemis----------
     this.physics.add.overlap(atk, ennemis, mortEnnemi,null ,this);
+    this.physics.add.overlap(grappin,neige,Grappin);
     this.physics.add.collider(ennemis, platforms);
     this.physics.add.collider(ennemis, neige);
     this.physics.add.collider(ennemis, glace);
@@ -156,7 +160,26 @@ function create ()//----------------------------------------
     this.physics.add.collider(player, glace, enleverFriction );
     //this.physics.add.overlap(atkDroite, ennemis, mortEnnemi,null,this);
     //this.physics.add.overlap(atkGauche, ennemis, mortEnnemi,null,this);
+}
 
+function Grappin()
+{
+    timerGrappin++;
+
+    if(cursors.space.isDown)
+    {
+        player.setVelocityY(-500);
+
+        if(timerGrappin >= 15) // le joueur gagne une velocité de 500 en Y puis il se téléporte et pert sa velocité
+        {
+            player.y = player.y - 15; //teleporte le joueur de 7 unité en hauteur
+            player.setVelocityY(0);
+        }
+    }
+    else if (cursors.up.isUp)
+    {
+        timerGrappin = 0;
+    }
 
 }
 
@@ -322,6 +345,14 @@ function deplacementHitboxAttaque(){ //Pour que les hitbox d'attaque restent col
     atkGauche.body.position.x = (player.body.position.x -64);//l'ajout corresponds à -2x la largeur du player
     atkGauche.body.position.y = (player.body.position.y);
 
+    //grappin
+    grappin.x = (player.body.position.x + 10);//l'ajout corresponds à -1x la largeur du player
+    grappin.y = (player.body.position.y -60);//l'ajout corresponds à 1/2x la hauteur du player
+    grappin.body.position.x = (player.body.position.x + 3);//l'ajout corresponds à la largeur du player
+    grappin.body.position.y = (player.body.position.y - 160);
+
+    grappin.setVelocity(0,0);
+
 }
 
 function deplacementEnnemi(ennemis){ //Pour que l'ennemi suive le joueur
@@ -339,6 +370,21 @@ function deplacementEnnemi(ennemis){ //Pour que l'ennemi suive le joueur
     else{
         ennemi.setVelocityX(0);
     }
+    
+    // ennemi2
+    if (player.body.position.x < ennemi2.body.position.x && player.body.position.x > (ennemi2.body.position.x-500) )
+    {
+        ennemi2.setVelocityX(-180);        
+    }
+    else if (player.body.position.x > ennemi2.body.position.x && player.body.position.x < (ennemi2.body.position.x+450) ){
+        ennemi2.setVelocityX(180);
+    }
+
+    //Pour que l'ennemi cesse de nous suivre quand on est trop loin 
+    else{
+        ennemi2.setVelocityX(0);
+    }
+    
 
 }
 //Fonction permettant de prendre des dégats ----------
