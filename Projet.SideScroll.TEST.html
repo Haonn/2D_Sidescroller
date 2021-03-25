@@ -50,7 +50,9 @@ var compteurRebond = 50;
 var rebond = false;
 var haut = 250;
 var bas = 350;
-
+var grappin;
+var timerGrappin = 0;
+var facingLeft = false;
 
 var game = new Phaser.Game(config);
 
@@ -67,7 +69,8 @@ function preload ()//----------------------------------------
     //Attaque/PullBox ----------
     this.load.image('attaque','assets/attaque.png'); 
     //Player----------
-    this.load.spritesheet('dude', 'assets/dude.png', { frameWidth: 32, frameHeight: 48 });
+    this.load.spritesheet('dude', 'assets/perso_base.png', { frameWidth: 80, frameHeight:  110});
+    this.load.image('grappin', 'assets/grappin.png');
 }
 
 function create ()//----------------------------------------
@@ -76,12 +79,13 @@ function create ()//----------------------------------------
     this.add.image(400, 300, 'sky');
 
     // Player et ses hitbox ----------
-    player = this.physics.add.sprite(300, 450, 'dude');
+    player = this.physics.add.sprite(600, 450, 'dude');
     atk = this.physics.add.group();
     atkDroite = atk.create (350,450,'attaque');
     //atkDroite.disableBody(true,true);
     atkGauche = atk.create (250,450,'attaque');
     //atkGauche.disableBody(true,true);
+    grappin = this.physics.add.image(0,0,'grappin');
 
     //  Initialisation plateformes ----------
     platforms = this.physics.add.staticGroup();
@@ -95,15 +99,15 @@ function create ()//----------------------------------------
     //  Plateformes ----------
     roche.create(275, 435,'roche')
     neige.create(600, 400, 'neige');
-    neige.create(600, 550, 'neige');
+    //neige2.create(600, 550, 'neige');
     glace.create(60, 250, 'glace');
     platforms.create(750, 220, 'ground');
 
     //Création des ennemis----------- 
     ennemis = this.physics.add.group();
 
-    ennemi = ennemis.create( 0, 300, '3dsmax');
-    ennemi = ennemis.create( 20, 300, '3dsmax');
+    ennemi = ennemis.create( 100, 300, '3dsmax');
+    ennemi2 = ennemis.create( 20, 300, '3dsmax');
     
     ennemi.setCollideWorldBounds(true);
     
@@ -119,22 +123,44 @@ function create ()//----------------------------------------
     //Anilmations player ----------
     this.anims.create({
         key: 'left',
-        frames: this.anims.generateFrameNumbers('dude', { start: 0, end: 3 }),
-        frameRate: 10,
+        frames: this.anims.generateFrameNumbers('dude', { start: 125, end: 155 }),
+        frameRate: 30,
         repeat: -1
     });
 
     this.anims.create({
-        key: 'turn',
-        frames: [ { key: 'dude', frame: 4 } ],
-        frameRate: 20
+        key: 'idleRight',
+        frames: this.anims.generateFrameNumbers('dude', { start: 1, end: 30}),
+        frameRate: 30,
+        repeat: -1
+    });
+
+    this.anims.create({
+        key: 'idleLeft',
+        frames: this.anims.generateFrameNumbers('dude', { start: 95, end: 125 }),
+        frameRate: 30,
+        repeat: -1
     });
 
     this.anims.create({
         key: 'right',
-        frames: this.anims.generateFrameNumbers('dude', { start: 5, end: 8 }),
-        frameRate: 10,
+        frames: this.anims.generateFrameNumbers('dude', { start: 30, end: 60 }),
+        frameRate: 30,
         repeat: -1
+    });
+
+    this.anims.create({
+        key: 'jumpRight',
+        frames: this.anims.generateFrameNumbers('dude', { start: 75, end: 85 }),
+        frameRate: 30,
+        repeat: 1
+    });
+
+    this.anims.create({
+        key: 'jumpLeft',
+        frames: this.anims.generateFrameNumbers('dude', { start: 170, end: 180 }),
+        frameRate: 30,
+        repeat: 1
     });
 
     //  Input Events
@@ -146,6 +172,9 @@ function create ()//----------------------------------------
 
     //Colliders ennemis----------
     this.physics.add.overlap(atk, ennemis, mortEnnemi,null ,this);
+    this.physics.add.overlap(grappin,neige,Grappin);
+    this.physics.add.overlap(grappin,platforms,Grappin);
+    this.physics.add.overlap(grappin,glace,Grappin);
     this.physics.add.collider(ennemis, platforms);
     this.physics.add.collider(ennemis, neige);
     this.physics.add.collider(ennemis, glace);
@@ -156,7 +185,26 @@ function create ()//----------------------------------------
     this.physics.add.collider(player, glace, enleverFriction );
     //this.physics.add.overlap(atkDroite, ennemis, mortEnnemi,null,this);
     //this.physics.add.overlap(atkGauche, ennemis, mortEnnemi,null,this);
+}
 
+function Grappin()
+{
+    timerGrappin++;
+
+    if(cursors.space.isDown)
+    {
+        player.setVelocityY(-500);
+
+        if(timerGrappin >= 15) // le joueur gagne une velocité de 500 en Y puis il se téléporte et pert sa velocité
+        {
+            player.y = player.y - 45; //teleporte le joueur de 7 unité en hauteur
+            player.setVelocityY(0);
+        }
+    }
+    else if (cursors.space.isUp)
+    {
+        timerGrappin = 0;
+    }
 
 }
 
@@ -184,7 +232,7 @@ function update () //------------------------------------------
     if (gameOver)
     {
         player.setTint(0xff0000)
-        player.anims.play('turn');
+        player.anims.play('idleRight');
         this.physics.pause();
         return;
     }
@@ -193,33 +241,49 @@ function update () //------------------------------------------
 //Déplacement à gauche----------
     if (cursors.left.isDown)
     {
+        facingLeft = true;
         if (ralenti == false && nonFriction == false)
         {
             player.setVelocityX(-160);
 
-            player.anims.play('left', true);
+            (player.body.touching.down == true)
+            {
+                player.anims.play('left', true );
+            }
         }
         else if (ralenti == true)
         {
             player.setVelocityX(-100);
 
-            player.anims.play('left', true );
+            (player.body.touching.down == true)
+            {
+                player.anims.play('left', true );
+            }
         }
         else if (nonFriction == true )
         {
             if (player.body.position.y < haut)
             {
-                player.anims.play('left',true);
+                (player.body.touching.down == true)
+            {
+                player.anims.play('left', true );
+            }
                 player.setAccelerationX(-60);
             }
             else if (player.body.position.y < bas)
             {
-                player.anims.play('left',true);
+                (player.body.touching.down == true)
+            {
+                player.anims.play('left', true );
+            }
                 player.setAccelerationX(-80);
             }
             else 
             {
-                player.anims.play('left',true);
+                (player.body.touching.down == true)
+            {
+                player.anims.play('left', true );
+            }
                 player.setAccelerationX(-100);
             }
 
@@ -228,6 +292,7 @@ function update () //------------------------------------------
     //Déplacement à droite ----------
     else if (cursors.right.isDown)
     {
+        facingLeft=false;
         if (ralenti == false && nonFriction == false )
         {
             player.setVelocityX(160);
@@ -266,23 +331,55 @@ function update () //------------------------------------------
         if(nonFriction == false ){
             player.setVelocityX(0);
 
-            player.anims.play('turn');
+            if (player.body.touching.down == true)
+            {
+                if (facingLeft==false){    
+                player.anims.play('idleRight',true);
+                }
+                else{
+                    player.anims.play('idleLeft',true);
+                }
+            }
         }
         else if (nonFriction == true)
         {
             if (player.body.position.y < haut)
             {
-                player.anims.play('turn');
+                if (player.body.touching.down == true)
+            {
+                if (facingLeft==false){    
+                player.anims.play('idleRight',true);
+                }
+                else{
+                    player.anims.play('idleLeft',true);
+                }
+            }
                 player.setAccelerationX(40);
             }
             else if (player.body.position.y < bas)
             {
-                player.anims.play('turn');
+                if (player.body.touching.down == true)
+            {
+                if (facingLeft==false){    
+                player.anims.play('idleRight',true);
+                }
+                else{
+                    player.anims.play('idleLeft',true);
+                }
+            }
                 player.setAccelerationX(20);
             }
             else
             {
-                player.anims.play('turn');
+                if (player.body.touching.down == true)
+            {
+                if (facingLeft==false){    
+                player.anims.play('idleRight',true);
+                }
+                else{
+                    player.anims.play('idleLeft',true);
+                }
+            }
                 player.setAccelerationX(0);
             }
         }
@@ -292,10 +389,12 @@ function update () //------------------------------------------
     {
         if (player.body.touching.down)
         {
+            player.anims.play('jump',true);
             player.setVelocityY(-330);
         }
         else if (rebond == true)
         {
+            player.anims.play('jump',true);
             player.setVelocityY(-400);
         }
     }
@@ -322,6 +421,14 @@ function deplacementHitboxAttaque(){ //Pour que les hitbox d'attaque restent col
     atkGauche.body.position.x = (player.body.position.x -64);//l'ajout corresponds à -2x la largeur du player
     atkGauche.body.position.y = (player.body.position.y);
 
+    //grappin
+    grappin.x = (player.body.position.x + 10);//l'ajout corresponds à -1x la largeur du player
+    grappin.y = (player.body.position.y -60);//l'ajout corresponds à 1/2x la hauteur du player
+    grappin.body.position.x = (player.body.position.x + 3);//l'ajout corresponds à la largeur du player
+    grappin.body.position.y = (player.body.position.y - 160);
+
+    grappin.setVelocity(0,0);
+
 }
 
 function deplacementEnnemi(ennemis){ //Pour que l'ennemi suive le joueur
@@ -339,6 +446,21 @@ function deplacementEnnemi(ennemis){ //Pour que l'ennemi suive le joueur
     else{
         ennemi.setVelocityX(0);
     }
+    
+    // ennemi2
+    if (player.body.position.x < ennemi2.body.position.x && player.body.position.x > (ennemi2.body.position.x-500) )
+    {
+        ennemi2.setVelocityX(-180);        
+    }
+    else if (player.body.position.x > ennemi2.body.position.x && player.body.position.x < (ennemi2.body.position.x+450) ){
+        ennemi2.setVelocityX(180);
+    }
+
+    //Pour que l'ennemi cesse de nous suivre quand on est trop loin 
+    else{
+        ennemi2.setVelocityX(0);
+    }
+    
 
 }
 //Fonction permettant de prendre des dégats ----------
