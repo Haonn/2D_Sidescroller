@@ -16,8 +16,8 @@
 
 var config = {// Configuration -----------------------------------------
     type: Phaser.AUTO,
-    width: 800,
-    height: 600,
+    width: 4000,
+    height: 6000,
     physics: {
         default: 'arcade',
         arcade: {
@@ -36,8 +36,32 @@ var atk;
 var player;
 var platforms;
 var neige;
+var neige1;
+var neige2;
+var neige3;
+var neige4;
+var neige5;
 var glace;
+var glace1;
+var glace2;
+var glace3;
+var glace4;
+var glace5;
+var glace6;
+var glace7;
+var glace8;
+var glace9;
 var roche;
+var roche1;
+var roche2;
+var roche3;
+var roche4;
+var roche5;
+var roche6;
+var roche7;
+var roche8;
+var roche9;
+var roche10;
 var cursors;
 var gameOver = false;
 var vie = 3;
@@ -48,37 +72,132 @@ var ralenti = false;
 var nonFriction = false;
 var compteurRebond = 50;
 var rebond = false;
-var haut = 250;
-var bas = 350;
+var haut = 2860;
+var bas = 3875;
 var grappin;
 var timerGrappin = 0;
+var facingLeft = false;
+var check;
+var checkpoint1;
+var checkpoint2;
+var checkpoint3;
+var passage = 0;
+var plateform1;
+var plateform2;
+var plateform3;
+var plateform4;
+var plateform5;
+var plateform6;
+var plateform7;
+var plateform8;
+var plateform9;
+var plateform10;
+var plateform11;
+var plateform12;
+var plateform13;
+var plateform14;
+var plateform15;
+var plateform16;
+var plateform17;
+var piege;
+var piege1;
+var piege2;
+var piege3;
+var piege4;
+var piege5;
+var piege6;
+var piege7;
+var piege8;
+var piege9;
+var piege10;
+var piege11;
+var piege12;
+var piege13;
+var piege14;
+var piege15;
+var piege16;
+var piege17;
+var piege18;
+var piege19;
+var piege20;
+var piege21;
+var piege22;
+var piege23;
+var piege24;
+var piege25;
+var piege26;
+var piege27;
+var piege28;
+var piege29;
+var piege30;
+var piege31;
+var piege32;
+var piege33;
+var piege34;
+var piege35;
+var piege36;
+var piege37;
+var piege38;
+var piege39;
+var piege40;
+var piege41;
+var piege42;
+var piege43;
+var piege44;
+var piege45;
+var piege46;
+var piege47;
+var piege48;
+var piege49;
+
+var heart1;
+var heart2;
+var heart3;
 
 var game = new Phaser.Game(config);
 
 function preload ()//----------------------------------------
 {
+    //
+    this.load.image('heart','assets/heart.png');
+    //checkpoint
+    this.load.image('check','assets/checkpoint.png');
     //Plateformes et arrière-plan----------
-    this.load.image('sky', 'assets/sky.png');
+    this.load.image('carte', 'assets/carte.png');
     this.load.image('ground', 'assets/platform.png');
     this.load.image('neige','assets/neige.png');
     this.load.image('glace','assets/glace.png');
     this.load.image('roche','assets/roche.png');
     //Ennemi ----------
-    this.load.image('3dsmax','assets/ennemi.png');
+    this.load.spritesheet('ennemis','assets/ennemi.png', { frameWidth: 54, frameHeight:  122});
+    //piege
+    this.load.image('piege','assets/piege_cristallin.png');
     //Attaque/PullBox ----------
     this.load.image('attaque','assets/attaque.png'); 
     //Player----------
     this.load.spritesheet('dude', 'assets/perso_base.png', { frameWidth: 80, frameHeight:  110});
     this.load.image('grappin', 'assets/grappin.png');
+
+    //Coeur (pour la jauge de vie)
+
 }
 
 function create ()//----------------------------------------
 {
+    // Caméra
+    this.cameras.main.setSize(1920,1080);
+ 
     //  A simple background for our game
-    this.add.image(400, 300, 'sky');
+    this.add.image(2000, 3000, 'carte');
+
+    //checkpoint
+    check = this.physics.add.group();
+    checkpoint1 = check.create (122,5403,'check');
+    checkpoint2 = check.create (3408,3875,'check');
+    checkpoint3 = check.create (1227,2860,'check');
 
     // Player et ses hitbox ----------
-    player = this.physics.add.sprite(600, 450, 'dude');
+    player = this.physics.add.sprite(200, 5400, 'dude').setOffset(8, -10);
     atk = this.physics.add.group();
     atkDroite = atk.create (350,450,'attaque');
     //atkDroite.disableBody(true,true);
@@ -91,31 +210,128 @@ function create ()//----------------------------------------
     roche = this.physics.add.staticGroup();
     neige = this.physics.add.staticGroup();
     glace = this.physics.add.staticGroup();
+    piege = this.physics.add.staticGroup();
 
-    //  Sol----------
-    platforms.create(400, 568, 'ground').setScale(2).refreshBody();
 
-    //  Plateformes ----------
-    roche.create(275, 435,'roche')
-    neige.create(600, 400, 'neige');
-    //neige2.create(600, 550, 'neige');
-    glace.create(60, 250, 'glace');
-    platforms.create(750, 220, 'ground');
+    //  Plateformes----------
+    roche.create(2000,4992,'roche')
+    roche1 = roche.create(2657,4750, 'roche');
+    roche2 = roche.create(3344,4550, 'roche');
+    roche3 = roche.create(3344,3927, 'roche');
+    roche4 = roche.create(2378,3514, 'roche');
+    roche5 = roche.create(3042,2968, 'roche');
+    roche6 = roche.create(2806,2628, 'roche');
+    roche7 = roche.create(1288,2510, 'roche');
+    roche8 = roche.create(1288,2110, 'roche');
+    roche9 = roche.create(2689,1939, 'roche');
+    roche10 = roche.create(2899,1441, 'roche');
+
+    //Pièges
+    piege1 = piege.create(1156,5463, 'piege');
+    piege2 = piege.create(2051,5463, 'piege');
+    piege3 = piege.create(2099,5463, 'piege');
+    piege4 = piege.create(2142,5463, 'piege');
+    piege5 = piege.create(2185,5463, 'piege');
+    piege6 = piege.create(2228,5463, 'piege');
+    piege7 = piege.create(2271,5463, 'piege');
+    piege8 = piege.create(2314,5463, 'piege');
+    piege9 = piege.create(2357,5463, 'piege');
+    piege10 = piege.create(2400,5463, 'piege');
+    piege11 = piege.create(2443,5463, 'piege');
+    piege12 = piege.create(2486,5463, 'piege');
+    piege13 = piege.create(2529,5463, 'piege');
+    piege14 = piege.create(2572,5463, 'piege');
+    piege15 = piege.create(2615,5463, 'piege');
+    piege16 = piege.create(2658,5463, 'piege');
+    piege17 = piege.create(2701,5463, 'piege');
+    piege18 = piege.create(2744,5463, 'piege');
+    piege19 = piege.create(2787,5463, 'piege');
+    piege20 = piege.create(2830,5463, 'piege');
+    piege21 = piege.create(2873,5463, 'piege');
+    piege22 = piege.create(2916,5463, 'piege');
+    piege23 = piege.create(2959,5463, 'piege');
+    piege24 = piege.create(3002,5463, 'piege');
+    piege25 = piege.create(3045,5463, 'piege');
+    piege26 = piege.create(3088,5463, 'piege');
+    piege27 = piege.create(3131,5463, 'piege');
+    piege28 = piege.create(2742,4277, 'piege');
+    piege29 = piege.create(2787,4277, 'piege');
+    piege30 = piege.create(2828,4277, 'piege');
+    piege31 = piege.create(2871,4277, 'piege');
+    piege32 = piege.create(2914,4277, 'piege');
+    piege33 = piege.create(2957,4277, 'piege');
+    piege34 = piege.create(3000,4277, 'piege');
+    piege35 = piege.create(3043,4277, 'piege');
+    piege36 = piege.create(3086,4277, 'piege');
+    piege37 = piege.create(2944,3863, 'piege');
+    piege38 = piege.create(2987,3863, 'piege');
+    piege39 = piege.create(1470,2318, 'piege');
+    piege40 = piege.create(1513,2318, 'piege');
+    piege41 = piege.create(1556,2318, 'piege');
+    piege42 = piege.create(2189,1791, 'piege');
+    piege43 = piege.create(2232,1791, 'piege');
+    piege44 = piege.create(2275,1791, 'piege');
+    piege45 = piege.create(2318,1791, 'piege');
+    piege46 = piege.create(2361,1791, 'piege');
+    piege47 = piege.create(2404,1791, 'piege');
+    piege48 = piege.create(2447,1791, 'piege');
+    piege49 = piege.create(2490,17913, 'piege');
+
+    
+
+    //neige fait
+    neige.create(800,5487, 'neige');
+    neige1 = neige.create(1400,5517, 'neige');
+    neige2 = neige.create(1800,5364, 'neige');
+    neige3 = neige.create(2950,4964, 'neige');
+    neige4 = neige.create(1251,2972, 'neige');
+    neige5 = neige.create(1651,2972, 'neige');
+
+    //glace fait
+    glace.create(1200,5334, 'glace');
+    glace1 = glace.create(2410,4783, 'glace');
+    glace2 = glace.create(3481,4421, 'glace');
+    glace3 = glace.create(2438,433, 'glace');
+    glace4 = glace.create(2638,3485, 'glace');
+    glace5 = glace.create(2051,2972, 'glace');
+    glace6 = glace.create(1419,2372, 'glace');
+    glace7 = glace.create(1670,2143, 'glace');
+    glace8 = glace.create(2753,2001, 'glace');
+    glace9 = glace.create(2381,1745, 'glace');
+
+
+    //plateformes fait
+    platforms.create(1781,1786, 'ground');
+    plateform1 = platforms.create(200, 5517, 'ground');
+    plateform2 = platforms.create(600,5517, 'ground');
+    plateform3 = platforms.create(1800,5517, 'ground');
+    plateform4 = platforms.create(2200,5517, 'ground');
+    plateform5 = platforms.create(2600,5517, 'ground');
+    plateform6 = platforms.create(3000,5517, 'ground');
+    plateform7 = platforms.create(3400,5517, 'ground');
+    plateform8 = platforms.create(4800,5817, 'ground');
+    plateform9 = platforms.create(4200,5817, 'ground');
+    plateform10 = platforms.create(2264,5022, 'ground');
+    plateform11 = platforms.create(3408,4612, 'ground');
+    plateform12 = platforms.create(2944, 4331, 'ground');
+    plateform13 = platforms.create(3514,3989, 'ground');
+    plateform14 = platforms.create(2838,3918, 'ground');
+    plateform15 = platforms.create(2397,2792, 'ground');
+    plateform16 = platforms.create(2070,2143, 'ground');
+    plateform17 = platforms.create(2381,1845, 'ground');
+
 
     //Création des ennemis----------- 
     ennemis = this.physics.add.group();
 
-    ennemi = ennemis.create( 100, 300, '3dsmax');
-    ennemi2 = ennemis.create( 20, 300, '3dsmax');
+    ennemi = ennemis.create(400, 5300, 'ennemis');
+    ennemi2 = ennemis.create(50, 5300, 'ennemis');
     
     ennemi.setCollideWorldBounds(true);
     
-    // Gestion de la vie ----------
-    vieText = this.add.text(16, 16, 'vie: 3', { fontSize: '32px', fill: '#000' });
-
-
+    
     // Propriétés physiques du player----------
-    player.setBounce(0.2);
+    player.setBounce(0);
     player.setCollideWorldBounds(true);
 
     // Animations------------------------------
@@ -128,8 +344,15 @@ function create ()//----------------------------------------
     });
 
     this.anims.create({
-        key: 'turn',
-        frames: this.anims.generateFrameNumbers('dude', { start: 1, end: 30}),
+        key: 'idleRight',
+        frames: this.anims.generateFrameNumbers('dude', { start: 1, end: 29}),
+        frameRate: 30,
+        repeat: -1
+    });
+
+    this.anims.create({
+        key: 'idleLeft',
+        frames: this.anims.generateFrameNumbers('dude', { start: 95, end: 124 }),
         frameRate: 30,
         repeat: -1
     });
@@ -142,11 +365,43 @@ function create ()//----------------------------------------
     });
 
     this.anims.create({
-        key: 'jump',
+        key: 'jumpRight',
         frames: this.anims.generateFrameNumbers('dude', { start: 75, end: 85 }),
         frameRate: 30,
         repeat: 1
     });
+
+    this.anims.create({
+        key: 'jumpLeft',
+        frames: this.anims.generateFrameNumbers('dude', { start: 170, end: 180 }),
+        frameRate: 30,
+        repeat: 1
+    });
+    // Animations ennemi ----------
+    this.anims.create({
+        key: 'idleLeftEnnemi',
+        frames: this.anims.generateFrameNumbers('ennemis', { start: 0, end: 30 }),
+        frameRate: 30,
+        repeat: 1
+    });
+    this.anims.create({
+        key: 'runningLeftEnnemi',
+        frames: this.anims.generateFrameNumbers('ennemis', { start: 30, end: 60 }),
+        frameRate: 30,
+        repeat: 1
+    });
+    this.anims.create({
+        key: 'runningRightEnnemi',
+        frames: this.anims.generateFrameNumbers('ennemis', { start: 91, end: 121 }),
+        frameRate: 30,
+        repeat: 1
+    });
+    
+    //Interface ------------------------------
+    //Coeurs----------
+    heart1 = this.add.image(0,0,'heart');
+    heart2 = this.add.image(0,0,'heart');
+    heart3 = this.add.image(0,0,'heart');
 
     //  Input Events
     cursors = this.input.keyboard.createCursorKeys();
@@ -158,16 +413,49 @@ function create ()//----------------------------------------
     //Colliders ennemis----------
     this.physics.add.overlap(atk, ennemis, mortEnnemi,null ,this);
     this.physics.add.overlap(grappin,neige,Grappin);
+    this.physics.add.overlap(grappin,platforms,Grappin);
+    this.physics.add.overlap(grappin,glace,Grappin);
     this.physics.add.collider(ennemis, platforms);
     this.physics.add.collider(ennemis, neige);
     this.physics.add.collider(ennemis, glace);
     this.physics.add.collider(ennemis, roche);
+    this.physics.add.collider(player,piege, piegeMortel);
     this.physics.add.collider(player, roche, possibiliteRebond);
     this.physics.add.collider(player, ennemis, degat);
     this.physics.add.collider(player, neige, ralentissement );
     this.physics.add.collider(player, glace, enleverFriction );
+    this.physics.add.collider(check, platforms);
+    this.physics.add.overlap(checkpoint1, player, CHECKPOINT1);
+    this.physics.add.overlap(checkpoint2, player, CHECKPOINT2)
+    this.physics.add.overlap(checkpoint3, player, CHECKPOINT3)
     //this.physics.add.overlap(atkDroite, ennemis, mortEnnemi,null,this);
     //this.physics.add.overlap(atkGauche, ennemis, mortEnnemi,null,this);
+}
+function piegeMortel(){
+    gameOver = true;
+    vie =3;
+}
+
+function CHECKPOINT1()
+{
+    if(passage <1)
+    {
+        passage =1;
+    }
+}
+function CHECKPOINT2()
+{
+    if(passage <2)
+    {
+        passage =2;
+    }
+}
+function CHECKPOINT3()
+{
+    if(passage <3)
+    {
+        passage =3;
+    }
 }
 
 function Grappin()
@@ -180,20 +468,76 @@ function Grappin()
 
         if(timerGrappin >= 15) // le joueur gagne une velocité de 500 en Y puis il se téléporte et pert sa velocité
         {
-            player.y = player.y - 15; //teleporte le joueur de 7 unité en hauteur
+            player.y = player.y - 85; //teleporte le joueur de 7 unité en hauteur
             player.setVelocityY(0);
         }
     }
-    else if (cursors.up.isUp)
+    else if (cursors.space.isUp)
     {
         timerGrappin = 0;
     }
 
 }
 
-function update () //------------------------------------------
-//Vent----------
+function UX()
 {
+    heart1.x = player.body.position.x -600 ;
+    heart1.y = player.body.position.y-540 ;
+    if (vie==1)
+    {
+        heart3.setAlpha(1,1,1,1);
+        heart2.setAlpha(0,0,0,0);
+        heart1.setAlpha(0,0,0,0);
+    }
+    heart2.x = player.body.position.x -630 ;
+    heart2.y = player.body.position.y -540 ;
+    if (vie==2)
+    {
+        heart3.setAlpha(1,1,1,1);
+        heart2.setAlpha(1,1,1,1);
+        heart1.setAlpha(0,0,0,0);
+    }
+    heart3.x = player.body.position.x -660 ;
+    heart3.y = player.body.position.y -540;
+    if (vie == 3)
+    {
+        heart3.setAlpha(1,1,1,1);
+        heart2.setAlpha(1,1,1,1);
+        heart1.setAlpha(1,1,1,1);
+    }
+}
+
+function update () //------------------------------------------
+
+
+{
+    /*function updateVie()
+    {
+        if (vie == 3 )
+        {
+            heart1.disableBody = false;
+            heart2.disableBody = false ;
+            heart3.disableBody = false;
+        }
+        else if (vie == 2 )
+        {
+            heart1.disableBody = true;
+            heart2.disableBody = false;
+            heart3.disableBody = false;
+            console.log('Entrée dans le else if')
+        }
+        else if (vie == 2 )
+        {
+            heart1.disableBody = true;
+            heart2.disableBody = true;
+            heart3.disableBody = false;
+        }
+    }*/
+
+    UX();
+    //Caméra 
+    this.cameras.main.startFollow(player, false,0,0,-225,100);
+    //Vent----------
     if (player.body.position.y < haut && nonFriction == false)// Vent en haut de la carte
     {
         player.setGravityX(5000)
@@ -214,16 +558,37 @@ function update () //------------------------------------------
 //Mort player ----------
     if (gameOver)
     {
-        player.setTint(0xff0000)
-        player.anims.play('turn');
-        this.physics.pause();
-        return;
+        console.log(passage);
+        if(passage == 1)
+        {
+            player.x = 122;
+            player.y = 5403;
+        }
+        else if (passage == 2)
+        {
+            player.x = 3408;
+            player.y = 3875;
+        }
+        else if (passage == 3)
+        {
+            player.x = 1227;
+            player.y = 2860;
+        }
+        else
+        {
+            player.x = 122;
+            player.y = 5403;
+        }
+
+        vie = 3;
+        gameOver=false;
     }
 
 //Déplacements --------------------------------
 //Déplacement à gauche----------
     if (cursors.left.isDown)
     {
+        facingLeft = true;
         if (ralenti == false && nonFriction == false)
         {
             player.setVelocityX(-160);
@@ -274,6 +639,7 @@ function update () //------------------------------------------
     //Déplacement à droite ----------
     else if (cursors.right.isDown)
     {
+        facingLeft=false;
         if (ralenti == false && nonFriction == false )
         {
             player.setVelocityX(160);
@@ -314,7 +680,12 @@ function update () //------------------------------------------
 
             if (player.body.touching.down == true)
             {
-                player.anims.play('turn',true);
+                if (facingLeft==false){    
+                player.anims.play('idleRight',true);
+                }
+                else{
+                    player.anims.play('idleLeft',true);
+                }
             }
         }
         else if (nonFriction == true)
@@ -323,7 +694,12 @@ function update () //------------------------------------------
             {
                 if (player.body.touching.down == true)
             {
-                player.anims.play('turn',true);
+                if (facingLeft==false){    
+                player.anims.play('idleRight',true);
+                }
+                else{
+                    player.anims.play('idleLeft',true);
+                }
             }
                 player.setAccelerationX(40);
             }
@@ -331,7 +707,12 @@ function update () //------------------------------------------
             {
                 if (player.body.touching.down == true)
             {
-                player.anims.play('turn',true);
+                if (facingLeft==false){    
+                player.anims.play('idleRight',true);
+                }
+                else{
+                    player.anims.play('idleLeft',true);
+                }
             }
                 player.setAccelerationX(20);
             }
@@ -339,7 +720,12 @@ function update () //------------------------------------------
             {
                 if (player.body.touching.down == true)
             {
-                player.anims.play('turn',true);
+                if (facingLeft==false){    
+                player.anims.play('idleRight',true);
+                }
+                else{
+                    player.anims.play('idleLeft',true);
+                }
             }
                 player.setAccelerationX(0);
             }
@@ -373,20 +759,20 @@ function update () //------------------------------------------
 //Déplacements autres que le joueur ----------
 
 function deplacementHitboxAttaque(){ //Pour que les hitbox d'attaque restent collées au joueur
-    atkDroite.x = (player.body.position.x +64);//l'ajout corresponds à 2x la largeur du player
+    atkDroite.x = (player.body.position.x +112);//l'ajout corresponds à 2x la largeur du player
     atkDroite.y = (player.body.position.y + 24);//l'ajout corresponds à 1/2 la hauteur du player
     atkGauche.x = (player.body.position.x - 32);//l'ajout corresponds à -1x la largeur du player
     atkGauche.y = (player.body.position.y +24);//l'ajout corresponds à 1/2x la hauteur du player
-    atkDroite.body.position.x = (player.body.position.x +32);//l'ajout corresponds à la largeur du player
+    atkDroite.body.position.x = (player.body.position.x +80);//l'ajout corresponds à la largeur du player
     atkDroite.body.position.y = (player.body.position.y);
     atkGauche.body.position.x = (player.body.position.x -64);//l'ajout corresponds à -2x la largeur du player
     atkGauche.body.position.y = (player.body.position.y);
 
     //grappin
-    grappin.x = (player.body.position.x + 10);//l'ajout corresponds à -1x la largeur du player
-    grappin.y = (player.body.position.y -60);//l'ajout corresponds à 1/2x la hauteur du player
-    grappin.body.position.x = (player.body.position.x + 3);//l'ajout corresponds à la largeur du player
-    grappin.body.position.y = (player.body.position.y - 160);
+    grappin.x = (player.body.position.x + 40);//l'ajout corresponds à -1x la largeur du player
+    grappin.y = (player.body.position.y -100);//l'ajout corresponds à 1/2x la hauteur du player
+    grappin.body.position.x = (player.body.position.x + 33);//l'ajout corresponds à la largeur du player
+    grappin.body.position.y = (player.body.position.y - 200);
 
     grappin.setVelocity(0,0);
 
@@ -397,15 +783,18 @@ function deplacementEnnemi(ennemis){ //Pour que l'ennemi suive le joueur
     
     if (player.body.position.x < ennemi.body.position.x && player.body.position.x > (ennemi.body.position.x-500) )
     {
-        ennemi.setVelocityX(-180);        
+        ennemi.setVelocityX(-180);
+        ennemi.anims.play('runningLeftEnnemi', true );        
     }
     else if (player.body.position.x > ennemi.body.position.x && player.body.position.x < (ennemi.body.position.x+450) ){
         ennemi.setVelocityX(180);
+        ennemi.anims.play('runningRightEnnemi', true ); 
     }
 
     //Pour que l'ennemi cesse de nous suivre quand on est trop loin 
     else{
         ennemi.setVelocityX(0);
+        ennemi.anims.play('idleLeftEnnemi', true );
     }
     
     // ennemi2
@@ -425,14 +814,14 @@ function deplacementEnnemi(ennemis){ //Pour que l'ennemi suive le joueur
 
 }
 //Fonction permettant de prendre des dégats ----------
+
 function degat ()
 {
-    if (invulnerable > 140)
+    if (invulnerable > 60)
     {
         if (vie > 0 )
         {
             vie -= 1;
-            vieText.setText("vie: "+vie);
             invulnerable = 0;
         }
         else 
