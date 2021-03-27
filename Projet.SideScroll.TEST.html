@@ -36,8 +36,32 @@ var atk;
 var player;
 var platforms;
 var neige;
+var neige1;
+var neige2;
+var neige3;
+var neige4;
+var neige5;
 var glace;
+var glace1;
+var glace2;
+var glace3;
+var glace4;
+var glace5;
+var glace6;
+var glace7;
+var glace8;
+var glace9;
 var roche;
+var roche1;
+var roche2;
+var roche3;
+var roche4;
+var roche5;
+var roche6;
+var roche7;
+var roche8;
+var roche9;
+var roche10;
 var cursors;
 var gameOver = false;
 var vie = 3;
@@ -55,13 +79,85 @@ var timerGrappin = 0;
 var facingLeft = false;
 var check;
 var checkpoint1;
-var passage;
+var checkpoint2;
+var checkpoint3;
+var passage = 0;
 var plateform1;
+var plateform2;
+var plateform3;
+var plateform4;
+var plateform5;
+var plateform6;
+var plateform7;
+var plateform8;
+var plateform9;
+var plateform10;
+var plateform11;
+var plateform12;
+var plateform13;
+var plateform14;
+var plateform15;
+var plateform16;
+var plateform17;
+var piege;
+var piege1;
+var piege2;
+var piege3;
+var piege4;
+var piege5;
+var piege6;
+var piege7;
+var piege8;
+var piege9;
+var piege10;
+var piege11;
+var piege12;
+var piege13;
+var piege14;
+var piege15;
+var piege16;
+var piege17;
+var piege18;
+var piege19;
+var piege20;
+var piege21;
+var piege22;
+var piege23;
+var piege24;
+var piege25;
+var piege26;
+var piege27;
+var piege28;
+var piege29;
+var piege30;
+var piege31;
+var piege32;
+var piege33;
+var piege34;
+var piege35;
+var piege36;
+var piege37;
+var piege38;
+var piege39;
+var piege40;
+var piege41;
+var piege42;
+var piege43;
+var piege44;
+var piege45;
+var piege46;
+var piege47;
+var piege48;
+var piege49;
+
+var heart1;
 
 var game = new Phaser.Game(config);
 
 function preload ()//----------------------------------------
 {
+    //
+    this.load.image('heart','assets/heart.png');
     //checkpoint
     this.load.image('check','assets/checkpoint.png');
     //Plateformes et arrière-plan----------
@@ -72,26 +168,34 @@ function preload ()//----------------------------------------
     this.load.image('roche','assets/roche.png');
     //Ennemi ----------
     this.load.image('3dsmax','assets/ennemi.png');
+    //piege
+    this.load.image('piege','assets/piege_cristallin.png');
     //Attaque/PullBox ----------
     this.load.image('attaque','assets/attaque.png'); 
     //Player----------
     this.load.spritesheet('dude', 'assets/perso_base.png', { frameWidth: 80, frameHeight:  110});
     this.load.image('grappin', 'assets/grappin.png');
+
+    //Coeur (pour la jauge de vie)
+
 }
 
 function create ()//----------------------------------------
 {
     // Caméra
     this.cameras.main.setSize(1920,1080);
+ 
     //  A simple background for our game
-    this.add.image(0, 0, 'carte');
+    this.add.image(2000, 3000, 'carte');
 
     //checkpoint
     check = this.physics.add.group();
-    checkpoint1 = check.create (350,450,'check');
+    checkpoint1 = check.create (122,5403,'check');
+    checkpoint2 = check.create (3408,3875,'check');
+    checkpoint3 = check.create (1227,2860,'check');
 
     // Player et ses hitbox ----------
-    player = this.physics.add.sprite(600, 450, 'dude').setOffset(8, -10);
+    player = this.physics.add.sprite(0, 0, 'dude').setOffset(8, -10);
     atk = this.physics.add.group();
     atkDroite = atk.create (350,450,'attaque');
     //atkDroite.disableBody(true,true);
@@ -104,18 +208,116 @@ function create ()//----------------------------------------
     roche = this.physics.add.staticGroup();
     neige = this.physics.add.staticGroup();
     glace = this.physics.add.staticGroup();
+    piege = this.physics.add.staticGroup();
 
-    //  Sol----------
-    platforms.create(400, 568, 'ground').setScale(2).refreshBody();
 
     //  Plateformes----------
-    roche.create(575, 435,'roche')
-    neige.create(600, 400, 'neige');
+    roche.create(2000,4992,'roche')
+    roche1 = roche.create(2457,4782, 'roche');
+    roche2 = roche.create(3144,4582, 'roche');
+    roche3 = roche.create(3144,3959, 'roche');
+    roche4 = roche.create(2178,3546, 'roche');
+    roche5 = roche.create(2842,3000, 'roche');
+    roche6 = roche.create(2606,2660, 'roche');
+    roche7 = roche.create(1088,2542, 'roche');
+    roche8 = roche.create(1088,2142, 'roche');
+    roche9 = roche.create(2489,1971, 'roche');
+    roche10 = roche.create(2699,1473, 'roche');
 
-    //neige2.create(600, 550, 'neige');
-    glace.create(60, 250, 'glace');
-    platforms.create(750, 220, 'ground');
-    plateform1 = platforms.create(100, 100, 'ground');
+    //Pièges
+    piege1 = piege.create(1156,5463, 'piege');
+    piege2 = piege.create(2051,5463, 'piege');
+    piege3 = piege.create(2099,5463, 'piege');
+    piege4 = piege.create(2142,5463, 'piege');
+    piege5 = piege.create(2185,5463, 'piege');
+    piege6 = piege.create(2228,5463, 'piege');
+    piege7 = piege.create(2271,5463, 'piege');
+    piege8 = piege.create(2314,5463, 'piege');
+    piege9 = piege.create(2357,5463, 'piege');
+    piege10 = piege.create(2400,5463, 'piege');
+    piege11 = piege.create(2443,5463, 'piege');
+    piege12 = piege.create(2486,5463, 'piege');
+    piege13 = piege.create(2529,5463, 'piege');
+    piege14 = piege.create(2572,5463, 'piege');
+    piege15 = piege.create(2615,5463, 'piege');
+    piege16 = piege.create(2658,5463, 'piege');
+    piege17 = piege.create(2701,5463, 'piege');
+    piege18 = piege.create(2744,5463, 'piege');
+    piege19 = piege.create(2787,5463, 'piege');
+    piege20 = piege.create(2830,5463, 'piege');
+    piege21 = piege.create(2873,5463, 'piege');
+    piege22 = piege.create(2916,5463, 'piege');
+    piege23 = piege.create(2959,5463, 'piege');
+    piege24 = piege.create(3002,5463, 'piege');
+    piege25 = piege.create(3045,5463, 'piege');
+    piege26 = piege.create(3088,5463, 'piege');
+    piege27 = piege.create(3131,5463, 'piege');
+    piege28 = piege.create(2742,4277, 'piege');
+    piege29 = piege.create(2787,4277, 'piege');
+    piege30 = piege.create(2828,4277, 'piege');
+    piege31 = piege.create(2871,4277, 'piege');
+    piege32 = piege.create(2914,4277, 'piege');
+    piege33 = piege.create(2957,4277, 'piege');
+    piege34 = piege.create(3000,4277, 'piege');
+    piege35 = piege.create(3043,4277, 'piege');
+    piege36 = piege.create(3086,4277, 'piege');
+    piege37 = piege.create(2944,3863, 'piege');
+    piege38 = piege.create(2987,3863, 'piege');
+    piege39 = piege.create(1470,2318, 'piege');
+    piege40 = piege.create(1513,2318, 'piege');
+    piege41 = piege.create(1556,2318, 'piege');
+    piege42 = piege.create(2189,1791, 'piege');
+    piege43 = piege.create(2232,1791, 'piege');
+    piege44 = piege.create(2275,1791, 'piege');
+    piege45 = piege.create(2318,1791, 'piege');
+    piege46 = piege.create(2361,1791, 'piege');
+    piege47 = piege.create(2404,1791, 'piege');
+    piege48 = piege.create(2447,1791, 'piege');
+    piege49 = piege.create(2490,17913, 'piege');
+
+    
+
+    //neige
+    neige.create(800,5487, 'neige');
+    neige1 = neige.create(1200,5487, 'neige');
+    neige2 = neige.create(1600,5334, 'neige');
+    neige3 = neige.create(2750,4934, 'neige');
+    neige4 = neige.create(1051,2942, 'neige');
+    neige5 = neige.create(1451,2942, 'neige');
+
+    //glace 
+    glace.create(1200,5334, 'glace');
+    glace1 = glace.create(2210,4753, 'glace');
+    glace2 = glace.create(3281,4391, 'glace');
+    glace3 = glace.create(2238,403, 'glace');
+    glace4 = glace.create(2438,3455, 'glace');
+    glace5 = glace.create(1851,2942, 'glace');
+    glace6 = glace.create(1219,2342, 'glace');
+    glace7 = glace.create(1470,2113, 'glace');
+    glace8 = glace.create(2553,1971, 'glace');
+    glace9 = glace.create(2181,1715, 'glace');
+
+
+    //plateformes
+    platforms.create(1781,1786, 'ground');
+    plateform1 = platforms.create(0, 5487, 'ground');
+    plateform2 = platforms.create(400,5487, 'ground');
+    plateform3 = platforms.create(1600,5487, 'ground');
+    plateform4 = platforms.create(2000,5487, 'ground');
+    plateform5 = platforms.create(2400,5487, 'ground');
+    plateform6 = platforms.create(2800,5487, 'ground');
+    plateform7 = platforms.create(3200,5487, 'ground');
+    plateform8 = platforms.create(4600,5487, 'ground');
+    plateform9 = platforms.create(4000,5487, 'ground');
+    plateform10 = platforms.create(2064,4992, 'ground');
+    plateform11 = platforms.create(3208,4582, 'ground');
+    plateform12 = platforms.create(2744, 4301, 'ground');
+    plateform13 = platforms.create(3314,3959, 'ground');
+    plateform14 = platforms.create(2638,3888, 'ground');
+    plateform15 = platforms.create(2197,2762, 'ground');
+    plateform16 = platforms.create(1870,2113, 'ground');
+    plateform17 = platforms.create(2181,1815, 'ground');
+
 
     //Création des ennemis----------- 
     ennemis = this.physics.add.group();
@@ -123,7 +325,7 @@ function create ()//----------------------------------------
     ennemi = ennemis.create( 100, 300, '3dsmax');
     ennemi2 = ennemis.create( 20, 300, '3dsmax');
     
-    ennemi.setCollideWorldBounds(true);
+    ennemi.setCollideWorldBounds(false);
     
     // Gestion de la vie ----------
     vieText = this.add.text(16, 16, 'vie: 3', { fontSize: '32px', fill: '#000' });
@@ -131,7 +333,7 @@ function create ()//----------------------------------------
 
     // Propriétés physiques du player----------
     player.setBounce(0.2);
-    player.setCollideWorldBounds(true);
+    player.setCollideWorldBounds(false);
 
     // Animations------------------------------
     //Anilmations player ----------
@@ -177,6 +379,9 @@ function create ()//----------------------------------------
         repeat: 1
     });
 
+    //
+    heart1 = this.add.image(0,0,'heart');
+
     //  Input Events
     cursors = this.input.keyboard.createCursorKeys();
 
@@ -193,14 +398,20 @@ function create ()//----------------------------------------
     this.physics.add.collider(ennemis, neige);
     this.physics.add.collider(ennemis, glace);
     this.physics.add.collider(ennemis, roche);
+    this.physics.add.collider(player,piege, piegeMortel);
     this.physics.add.collider(player, roche, possibiliteRebond);
     this.physics.add.collider(player, ennemis, degat);
     this.physics.add.collider(player, neige, ralentissement );
     this.physics.add.collider(player, glace, enleverFriction );
     this.physics.add.collider(check, platforms);
     this.physics.add.overlap(checkpoint1, player, CHECKPOINT1);
+    this.physics.add.overlap(checkpoint2, player, CHECKPOINT2)
+    this.physics.add.overlap(checkpoint3, player, CHECKPOINT3)
     //this.physics.add.overlap(atkDroite, ennemis, mortEnnemi,null,this);
     //this.physics.add.overlap(atkGauche, ennemis, mortEnnemi,null,this);
+}
+function piegeMortel(){
+    gameOver = true;
 }
 
 function CHECKPOINT1()
@@ -246,10 +457,17 @@ function Grappin()
 
 }
 
+function UX()
+{
+    heart1.x = player.body.position.x -50 ;
+    heart1.y = player.body.position.y ;
+}
+
 function update () //------------------------------------------
 
 
 {
+    UX();
     //Caméra 
     this.cameras.main.startFollow(player, false,0,0,-225,100);
     //Vent----------
@@ -273,23 +491,26 @@ function update () //------------------------------------------
 //Mort player ----------
     if (gameOver)
     {
-
+        console.log(passage);
         if(passage == 1)
         {
-            player.x = checkpoint1.x;
-            player.y = checkpoint1.y;
+            player.x = 122;
+            player.y = 5403;
         }
         else if (passage == 2)
         {
-            
+            player.x = 3408;
+            player.y = 3875;
         }
         else if (passage == 3)
         {
-
+            player.x = 1227;
+            player.y = 2860;
         }
         else
         {
-            //spawn perso
+            player.x = 122;
+            player.y = 5403;
         }
 
         vie = 3;
@@ -525,7 +746,7 @@ function deplacementEnnemi(ennemis){ //Pour que l'ennemi suive le joueur
 //Fonction permettant de prendre des dégats ----------
 function degat ()
 {
-    if (invulnerable > 140)
+    if (invulnerable > 60)
     {
         if (vie > 0 )
         {
