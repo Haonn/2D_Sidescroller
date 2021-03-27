@@ -1,8 +1,8 @@
 X Contrôles clavier
   Contrôles Manette 
-~  Indicateur de vie
+X  Indicateur de vie
 X  Frames d'invincibilité
-  Ennemis
+X  Ennemis
 X  Faisant perdre de la vie
 X  Ayant un comportement déterminé
     X Que l'on peut faire disparaître
@@ -14,14 +14,14 @@ X  Ayant un comportement déterminé
   Rebond sur les parois rocheuses
   X Inertie sur la glace
   X Ralentissement dans la neige
-  Pièges mortels instantanément 
+  X Pièges mortels instantanément 
   Power up = résister au vent 
-  Scrolling vertical et horizontal
-  Mouvement spécial 
+  X Scrolling vertical et horizontal
+  X Mouvement spécial 
   ///////////////////////////////////////////////////////////
   X Comportement des ennemis évoluant selon le Joueur (gauche ou droite) 
   X Mécanique de vent 
-  Checkpoints 
-  Possibilité de tomber en bas mais pas en dessous du dernier checkpoint 
-  Grappin vers le haut 
+  X Checkpoints 
+  X Possibilité de tomber en bas mais pas en dessous du dernier checkpoint 
+  X Grappin vers le haut 
   Menu
