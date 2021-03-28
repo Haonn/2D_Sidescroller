@@ -33,6 +33,7 @@ var config = {// Configuration -----------------------------------------
 };
 //Déclaration variables --------------------
 var atk;
+var animAtk = 16;
 var player;
 var platforms;
 var neige;
@@ -75,6 +76,7 @@ var rebond = false;
 var haut = 2860;
 var bas = 3875;
 var grappin;
+var grappin1;
 var timerGrappin = 0;
 var facingLeft = false;
 var check;
@@ -149,7 +151,11 @@ var piege46;
 var piege47;
 var piege48;
 var piege49;
-
+var powerUp;
+var powerUp1;
+var powerUp2;
+var antiVent = 1201;
+var dureeAntiVent = 1200;
 var heart1;
 var heart2;
 var heart3;
@@ -160,6 +166,7 @@ function preload ()//----------------------------------------
 {
     //
     this.load.image('heart','assets/heart.png');
+    this.load.image('powerup','assets/power_up.png');
     //checkpoint
     this.load.image('check','assets/checkpoint.png');
     //Plateformes et arrière-plan----------
@@ -176,7 +183,7 @@ function preload ()//----------------------------------------
     this.load.image('attaque','assets/attaque.png'); 
     //Player----------
     this.load.spritesheet('dude', 'assets/perso_base.png', { frameWidth: 80, frameHeight:  110});
-    this.load.image('grappin', 'assets/grappin.png');
+    this.load.spritesheet('grappin', 'assets/grappin.png', { frameWidth: 11, frameHeight:  168});
 
     //Coeur (pour la jauge de vie)
 
@@ -200,10 +207,10 @@ function create ()//----------------------------------------
     player = this.physics.add.sprite(200, 5400, 'dude').setOffset(8, -10);
     atk = this.physics.add.group();
     atkDroite = atk.create (350,450,'attaque');
-    //atkDroite.disableBody(true,true);
     atkGauche = atk.create (250,450,'attaque');
-    //atkGauche.disableBody(true,true);
-    grappin = this.physics.add.image(0,0,'grappin');
+
+    grappin = this.physics.add.group();
+    grappin1 = grappin.create (0,0,'grappin');
 
     //  Initialisation plateformes ----------
     platforms = this.physics.add.staticGroup();
@@ -320,6 +327,11 @@ function create ()//----------------------------------------
     plateform16 = platforms.create(2070,2143, 'ground');
     plateform17 = platforms.create(2381,1845, 'ground');
 
+    //powerup
+    powerUp = this.physics.add.group();
+
+    powerUp1 = powerUp.create(600,5300, 'powerup');
+    powerUp1 = powerUp.create(800,5300, 'powerup');
 
     //Création des ennemis----------- 
     ennemis = this.physics.add.group();
@@ -329,7 +341,7 @@ function create ()//----------------------------------------
     
     ennemi.setCollideWorldBounds(true);
     
-    
+
     // Propriétés physiques du player----------
     player.setBounce(0);
     player.setCollideWorldBounds(true);
@@ -342,6 +354,13 @@ function create ()//----------------------------------------
         frameRate: 30,
         repeat: -1
     });
+
+    this.anims.create({
+        key: 'attaquePlayer',
+        frames: this.anims.generateFrameNumbers('dude', {start : 60, end : 75}),
+        frameRate: 30,
+        repeat: 0
+    })
 
     this.anims.create({
         key: 'idleRight',
@@ -374,6 +393,13 @@ function create ()//----------------------------------------
     this.anims.create({
         key: 'jumpLeft',
         frames: this.anims.generateFrameNumbers('dude', { start: 170, end: 180 }),
+        frameRate: 30,
+        repeat: 1
+    });
+
+    this.anims.create({
+        key: 'grappinGrab',
+        frames: this.anims.generateFrameNumbers('grappin', { start: 1, end: 22 }),
         frameRate: 30,
         repeat: 1
     });
@@ -415,6 +441,10 @@ function create ()//----------------------------------------
     this.physics.add.overlap(grappin,neige,Grappin);
     this.physics.add.overlap(grappin,platforms,Grappin);
     this.physics.add.overlap(grappin,glace,Grappin);
+    this.physics.add.collider(powerUp, platforms);
+    this.physics.add.collider(powerUp, neige);
+    this.physics.add.collider(powerUp, glace);
+    this.physics.add.overlap(player, powerUp,collectPowerUp, null, this);
     this.physics.add.collider(ennemis, platforms);
     this.physics.add.collider(ennemis, neige);
     this.physics.add.collider(ennemis, glace);
@@ -425,6 +455,8 @@ function create ()//----------------------------------------
     this.physics.add.collider(player, neige, ralentissement );
     this.physics.add.collider(player, glace, enleverFriction );
     this.physics.add.collider(check, platforms);
+    this.physics.add.collider(check, neige);
+    this.physics.add.collider(check, glace);
     this.physics.add.overlap(checkpoint1, player, CHECKPOINT1);
     this.physics.add.overlap(checkpoint2, player, CHECKPOINT2)
     this.physics.add.overlap(checkpoint3, player, CHECKPOINT3)
@@ -436,6 +468,10 @@ function piegeMortel(){
     vie =3;
 }
 
+function collectPowerUp(player,powerUp){
+    antiVent = 0;
+    powerUp.disableBody(true,true);
+}
 function CHECKPOINT1()
 {
     if(passage <1)
@@ -461,10 +497,11 @@ function CHECKPOINT3()
 function Grappin()
 {
     timerGrappin++;
-
+    
     if(cursors.space.isDown)
     {
         player.setVelocityY(-500);
+        //grappin1.anims.play('grabGrappin',true);
 
         if(timerGrappin >= 15) // le joueur gagne une velocité de 500 en Y puis il se téléporte et pert sa velocité
         {
@@ -511,38 +548,20 @@ function update () //------------------------------------------
 
 
 {
-    /*function updateVie()
+    
+    if(animAtk<2)
     {
-        if (vie == 3 )
-        {
-            heart1.disableBody = false;
-            heart2.disableBody = false ;
-            heart3.disableBody = false;
-        }
-        else if (vie == 2 )
-        {
-            heart1.disableBody = true;
-            heart2.disableBody = false;
-            heart3.disableBody = false;
-            console.log('Entrée dans le else if')
-        }
-        else if (vie == 2 )
-        {
-            heart1.disableBody = true;
-            heart2.disableBody = true;
-            heart3.disableBody = false;
-        }
-    }*/
-
+        player.anims.play('attaquePlayer',true);
+    }
     UX();
     //Caméra 
     this.cameras.main.startFollow(player, false,0,0,-225,100);
     //Vent----------
-    if (player.body.position.y < haut && nonFriction == false)// Vent en haut de la carte
+    if (player.body.position.y < haut && nonFriction == false && antiVent > dureeAntiVent)// Vent en haut de la carte
     {
         player.setGravityX(5000)
     }
-    else if (player.body.position.y < bas &&  nonFriction == false) // Vent au milieu de la carte 
+    else if (player.body.position.y < bas &&  nonFriction == false && antiVent > dureeAntiVent) // Vent au milieu de la carte 
     {
         player.setGravityX(2500)
     }
@@ -609,7 +628,7 @@ function update () //------------------------------------------
         }
         else if (nonFriction == true )
         {
-            if (player.body.position.y < haut)
+            if (player.body.position.y < haut && antiVent > dureeAntiVent)
             {
                 (player.body.touching.down == true)
             {
@@ -617,7 +636,7 @@ function update () //------------------------------------------
             }
                 player.setAccelerationX(-60);
             }
-            else if (player.body.position.y < bas)
+            else if (player.body.position.y < bas && antiVent > dureeAntiVent)
             {
                 (player.body.touching.down == true)
             {
@@ -654,12 +673,12 @@ function update () //------------------------------------------
         }
         else if (nonFriction == true )
         {
-            if (player.body.position.y < haut)
+            if (player.body.position.y < haut  && antiVent > dureeAntiVent)
             {
                 player.anims.play('right',true);
                 player.setAccelerationX(140);
             }
-            else if (player.body.position.y < bas)
+            else if (player.body.position.y < bas  && antiVent > dureeAntiVent)
             {
                 player.anims.play('right',true);
                 player.setAccelerationX(120);
@@ -680,7 +699,7 @@ function update () //------------------------------------------
 
             if (player.body.touching.down == true)
             {
-                if (facingLeft==false){    
+                if (facingLeft==false && animAtk >15 ){    
                 player.anims.play('idleRight',true);
                 }
                 else{
@@ -690,22 +709,22 @@ function update () //------------------------------------------
         }
         else if (nonFriction == true)
         {
-            if (player.body.position.y < haut)
+            if (player.body.position.y < haut  && antiVent > dureeAntiVent)
             {
-                if (player.body.touching.down == true)
+                if (player.body.touching.down == true && animAtk >15) 
             {
                 if (facingLeft==false){    
                 player.anims.play('idleRight',true);
                 }
-                else{
+                else if (animAtk < 15) {
                     player.anims.play('idleLeft',true);
                 }
             }
                 player.setAccelerationX(40);
             }
-            else if (player.body.position.y < bas)
+            else if (player.body.position.y < bas  && antiVent > dureeAntiVent)
             {
-                if (player.body.touching.down == true)
+                if (player.body.touching.down == true && animAtk >15)
             {
                 if (facingLeft==false){    
                 player.anims.play('idleRight',true);
@@ -716,14 +735,14 @@ function update () //------------------------------------------
             }
                 player.setAccelerationX(20);
             }
-            else
+            else if(animAtk < 15)
             {
                 if (player.body.touching.down == true)
             {
                 if (facingLeft==false){    
                 player.anims.play('idleRight',true);
                 }
-                else{
+                else {
                     player.anims.play('idleLeft',true);
                 }
             }
@@ -746,6 +765,7 @@ function update () //------------------------------------------
         }
     }
     compteurRebond++;
+    antiVent++;
     if (compteurRebond < 50)
     {
         rebond = false;
@@ -753,8 +773,10 @@ function update () //------------------------------------------
 //Fonctionnalités toujours actives ------------------------------
 //Frame d'invulnérabilité ----------
     invulnerable++;
+    animAtk++;
     deplacementEnnemi(ennemis);
     deplacementHitboxAttaque();
+    
 }
 //Déplacements autres que le joueur ----------
 
@@ -769,48 +791,53 @@ function deplacementHitboxAttaque(){ //Pour que les hitbox d'attaque restent col
     atkGauche.body.position.y = (player.body.position.y);
 
     //grappin
-    grappin.x = (player.body.position.x + 40);//l'ajout corresponds à -1x la largeur du player
-    grappin.y = (player.body.position.y -100);//l'ajout corresponds à 1/2x la hauteur du player
-    grappin.body.position.x = (player.body.position.x + 33);//l'ajout corresponds à la largeur du player
-    grappin.body.position.y = (player.body.position.y - 200);
+    grappin1.x = (player.body.position.x + 40);//l'ajout corresponds à -1x la largeur du player
+    grappin1.y = (player.body.position.y -100);//l'ajout corresponds à 1/2x la hauteur du player
+    grappin1.body.position.x = (player.body.position.x + 33);//l'ajout corresponds à la largeur du player
+    grappin1.body.position.y = (player.body.position.y - 200);
 
-    grappin.setVelocity(0,0);
+    grappin1.setVelocity(0,0);
 
 }
 
 function deplacementEnnemi(ennemis){ //Pour que l'ennemi suive le joueur
    
-    
-    if (player.body.position.x < ennemi.body.position.x && player.body.position.x > (ennemi.body.position.x-500) )
-    {
-        ennemi.setVelocityX(-180);
-        ennemi.anims.play('runningLeftEnnemi', true );        
-    }
-    else if (player.body.position.x > ennemi.body.position.x && player.body.position.x < (ennemi.body.position.x+450) ){
-        ennemi.setVelocityX(180);
-        ennemi.anims.play('runningRightEnnemi', true ); 
-    }
+    if(player.body.position.y > (ennemi2.body.position.y-500) && (player.body.position.y < (ennemi2.body.position.y+500))) 
+        {
+        if (player.body.position.x < ennemi.body.position.x && player.body.position.x > (ennemi.body.position.x-500) )
+        {
+            ennemi.setVelocityX(-180);
+            ennemi.anims.play('runningLeftEnnemi', true );        
+        }
+        else if (player.body.position.x > ennemi.body.position.x && player.body.position.x < (ennemi.body.position.x+450) ){
+            ennemi.setVelocityX(180);
+            ennemi.anims.play('runningRightEnnemi', true ); 
+        }
 
-    //Pour que l'ennemi cesse de nous suivre quand on est trop loin 
-    else{
-        ennemi.setVelocityX(0);
-        ennemi.anims.play('idleLeftEnnemi', true );
+        else{
+            ennemi.setVelocityX(0);
+            ennemi.anims.play('idleLeftEnnemi', true );
+        }
     }
     
     // ennemi2
-    if (player.body.position.x < ennemi2.body.position.x && player.body.position.x > (ennemi2.body.position.x-500) )
-    {
-        ennemi2.setVelocityX(-180);        
-    }
-    else if (player.body.position.x > ennemi2.body.position.x && player.body.position.x < (ennemi2.body.position.x+450) ){
-        ennemi2.setVelocityX(180);
-    }
+    if(player.body.position.y > (ennemi2.body.position.y-500) && (player.body.position.y < (ennemi2.body.position.y+500))) 
+        {
+        if (player.body.position.x < ennemi2.body.position.x && player.body.position.x > (ennemi2.body.position.x-500) )
+        {
+            ennemi2.setVelocityX(-180);
+            ennemi2.anims.play('runningLeftEnnemi', true );           
+        }
+        else if (player.body.position.x > ennemi2.body.position.x && player.body.position.x < (ennemi2.body.position.x+450) ){
+            ennemi2.setVelocityX(180);
+            ennemi2.anims.play('runningRightEnnemi', true );
+        }
 
-    //Pour que l'ennemi cesse de nous suivre quand on est trop loin 
-    else{
-        ennemi2.setVelocityX(0);
+        else{
+            ennemi2.setVelocityX(0);
+            ennemi2.anims.play('idleLeftEnnemi', true );
+        }
     }
-    
 
 }
 //Fonction permettant de prendre des dégats ----------
@@ -862,7 +889,9 @@ function mortEnnemi(player,ennemi)
 {
     if(cursors.space.isDown)
     {
+        animAtk = 0;
         ennemi.disableBody(true,true);
+
     }
 }
 
