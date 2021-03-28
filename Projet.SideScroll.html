@@ -22,8 +22,11 @@ var config = {// Configuration -----------------------------------------
         default: 'arcade',
         arcade: {
             gravity: { y: 300, x:0 },
-            debug: true
+            debug: false
         }
+    },
+    input:{
+        gamepad:true
     },
     scene: {
         preload: preload,
@@ -32,6 +35,9 @@ var config = {// Configuration -----------------------------------------
     }
 };
 //Déclaration variables --------------------
+var paddle;
+var paddleConnected = false;
+
 var atk;
 var animAtk = 16;
 var player;
@@ -160,6 +166,8 @@ var heart1;
 var heart2;
 var heart3;
 
+var a = true;
+
 var game = new Phaser.Game(config);
 
 function preload ()//----------------------------------------
@@ -199,15 +207,17 @@ function create ()//----------------------------------------
 
     //checkpoint
     check = this.physics.add.group();
-    checkpoint1 = check.create (122,5403,'check');
-    checkpoint2 = check.create (3408,3875,'check');
-    checkpoint3 = check.create (1227,2860,'check');
+    checkpoint1 = check.create (146,5350,'check');
+    checkpoint2 = check.create (3432,3916,'check');
+    checkpoint3 = check.create (1251,2801,'check');
 
     // Player et ses hitbox ----------
-    player = this.physics.add.sprite(200, 5400, 'dude').setOffset(8, -10);
+    player = this.physics.add.sprite(200, 5350, 'dude').setOffset(8, -10);
     atk = this.physics.add.group();
     atkDroite = atk.create (350,450,'attaque');
     atkGauche = atk.create (250,450,'attaque');
+    atkDroite.setAlpha(0,0,0,0);
+    atkGauche.setAlpha(0,0,0,0);
 
     grappin = this.physics.add.group();
     grappin1 = grappin.create (0,0,'grappin');
@@ -221,123 +231,123 @@ function create ()//----------------------------------------
 
 
     //  Plateformes----------
-    roche.create(2000,4992,'roche')
-    roche1 = roche.create(2657,4750, 'roche');
-    roche2 = roche.create(3344,4550, 'roche');
-    roche3 = roche.create(3344,3927, 'roche');
-    roche4 = roche.create(2378,3514, 'roche');
-    roche5 = roche.create(3042,2968, 'roche');
-    roche6 = roche.create(2806,2628, 'roche');
-    roche7 = roche.create(1288,2510, 'roche');
-    roche8 = roche.create(1288,2110, 'roche');
-    roche9 = roche.create(2689,1939, 'roche');
-    roche10 = roche.create(2899,1441, 'roche');
+    roche.create(2731,1673,'roche')
+    roche1 = roche.create(2032,5192, 'roche');
+    roche2 = roche.create(2489,4982, 'roche');
+    roche3 = roche.create(3176,4782, 'roche');
+    roche4 = roche.create(3176,4159, 'roche');
+    roche5 = roche.create(2210,3746, 'roche');
+    roche6 = roche.create(2874,3200, 'roche');
+    roche7 = roche.create(2638,2860, 'roche');
+    roche8 = roche.create(1120,2742, 'roche');
+    roche9 = roche.create(1120,2342, 'roche');
+    roche10 = roche.create(2521,2171, 'roche');
 
     //Pièges
-    piege1 = piege.create(1156,5463, 'piege');
-    piege2 = piege.create(2051,5463, 'piege');
-    piege3 = piege.create(2099,5463, 'piege');
-    piege4 = piege.create(2142,5463, 'piege');
-    piege5 = piege.create(2185,5463, 'piege');
-    piege6 = piege.create(2228,5463, 'piege');
-    piege7 = piege.create(2271,5463, 'piege');
-    piege8 = piege.create(2314,5463, 'piege');
-    piege9 = piege.create(2357,5463, 'piege');
-    piege10 = piege.create(2400,5463, 'piege');
-    piege11 = piege.create(2443,5463, 'piege');
-    piege12 = piege.create(2486,5463, 'piege');
-    piege13 = piege.create(2529,5463, 'piege');
-    piege14 = piege.create(2572,5463, 'piege');
-    piege15 = piege.create(2615,5463, 'piege');
-    piege16 = piege.create(2658,5463, 'piege');
-    piege17 = piege.create(2701,5463, 'piege');
-    piege18 = piege.create(2744,5463, 'piege');
-    piege19 = piege.create(2787,5463, 'piege');
-    piege20 = piege.create(2830,5463, 'piege');
-    piege21 = piege.create(2873,5463, 'piege');
-    piege22 = piege.create(2916,5463, 'piege');
-    piege23 = piege.create(2959,5463, 'piege');
-    piege24 = piege.create(3002,5463, 'piege');
-    piege25 = piege.create(3045,5463, 'piege');
-    piege26 = piege.create(3088,5463, 'piege');
-    piege27 = piege.create(3131,5463, 'piege');
-    piege28 = piege.create(2742,4277, 'piege');
-    piege29 = piege.create(2787,4277, 'piege');
-    piege30 = piege.create(2828,4277, 'piege');
-    piege31 = piege.create(2871,4277, 'piege');
-    piege32 = piege.create(2914,4277, 'piege');
-    piege33 = piege.create(2957,4277, 'piege');
-    piege34 = piege.create(3000,4277, 'piege');
-    piege35 = piege.create(3043,4277, 'piege');
-    piege36 = piege.create(3086,4277, 'piege');
-    piege37 = piege.create(2944,3863, 'piege');
-    piege38 = piege.create(2987,3863, 'piege');
-    piege39 = piege.create(1470,2318, 'piege');
-    piege40 = piege.create(1513,2318, 'piege');
-    piege41 = piege.create(1556,2318, 'piege');
-    piege42 = piege.create(2189,1791, 'piege');
-    piege43 = piege.create(2232,1791, 'piege');
-    piege44 = piege.create(2275,1791, 'piege');
-    piege45 = piege.create(2318,1791, 'piege');
-    piege46 = piege.create(2361,1791, 'piege');
-    piege47 = piege.create(2404,1791, 'piege');
-    piege48 = piege.create(2447,1791, 'piege');
-    piege49 = piege.create(2490,17913, 'piege');
+    piege1 = piege.create(1180,5421, 'piege');
+    piege2 = piege.create(2075,5421, 'piege');
+    piege3 = piege.create(2123,5421, 'piege');
+    piege4 = piege.create(2166,5421, 'piege');
+    piege5 = piege.create(2209,5421, 'piege');
+    piege6 = piege.create(2252,5421, 'piege');
+    piege7 = piege.create(2295,5421, 'piege');
+    piege8 = piege.create(2338,5421, 'piege');
+    piege9 = piege.create(2381,5421, 'piege');
+    piege10 = piege.create(2424,5421, 'piege');
+    piege11 = piege.create(2467,5421, 'piege');
+    piege12 = piege.create(2510,5421, 'piege');
+    piege13 = piege.create(2553,5421, 'piege');
+    piege14 = piege.create(2596,5421, 'piege');
+    piege15 = piege.create(2639,5421, 'piege');
+    piege16 = piege.create(2682,5421, 'piege');
+    piege17 = piege.create(2725,5421, 'piege');
+    piege18 = piege.create(2768,5421, 'piege');
+    piege19 = piege.create(2811,5421, 'piege');
+    piege20 = piege.create(2854,5421, 'piege');
+    piege21 = piege.create(2897,5421, 'piege');
+    piege22 = piege.create(2940,5421, 'piege');
+    piege23 = piege.create(2983,5421, 'piege');
+    piege24 = piege.create(3026,5421, 'piege');
+    piege25 = piege.create(3069,5421, 'piege');
+    piege26 = piege.create(3112,5421, 'piege');
+    piege27 = piege.create(3155,5421, 'piege');
+    piege28 = piege.create(2766,4235, 'piege');
+    piege29 = piege.create(2811,4235, 'piege');
+    piege30 = piege.create(2852,4235, 'piege');
+    piege31 = piege.create(2895,4235, 'piege');
+    piege32 = piege.create(2938,4235, 'piege');
+    piege33 = piege.create(2981,4235, 'piege');
+    piege34 = piege.create(3024,4235, 'piege');
+    piege35 = piege.create(3067,4235, 'piege');
+    piege36 = piege.create(3110,4235, 'piege');
+    piege37 = piege.create(2968,3821, 'piege');
+    piege38 = piege.create(3011,3821, 'piege');
+    piege39 = piege.create(1494,2076, 'piege');
+    piege40 = piege.create(1537,2276, 'piege');
+    piege41 = piege.create(1580,2276, 'piege');
+    piege42 = piege.create(2213,1749, 'piege');
+    piege43 = piege.create(2256,1749, 'piege');
+    piege44 = piege.create(2299,1749, 'piege');
+    piege45 = piege.create(2342,1749, 'piege');
+    piege46 = piege.create(2385,1749, 'piege');
+    piege47 = piege.create(2428,1749, 'piege');
+    piege48 = piege.create(2471,1749, 'piege');
+    piege49 = piege.create(2514,1749, 'piege');
 
     
 
     //neige fait
-    neige.create(800,5487, 'neige');
-    neige1 = neige.create(1400,5517, 'neige');
-    neige2 = neige.create(1800,5364, 'neige');
-    neige3 = neige.create(2950,4964, 'neige');
-    neige4 = neige.create(1251,2972, 'neige');
-    neige5 = neige.create(1651,2972, 'neige');
+    neige.create(1000,5458, 'neige');
+    neige1 = neige.create(1400,5458, 'neige');
+    neige2 = neige.create(1800,5305, 'neige');
+    neige3 = neige.create(2950,4905, 'neige');
+    neige4 = neige.create(1251,2913, 'neige');
+    neige5 = neige.create(1651,2913, 'neige');
 
     //glace fait
-    glace.create(1200,5334, 'glace');
-    glace1 = glace.create(2410,4783, 'glace');
-    glace2 = glace.create(3481,4421, 'glace');
-    glace3 = glace.create(2438,433, 'glace');
-    glace4 = glace.create(2638,3485, 'glace');
-    glace5 = glace.create(2051,2972, 'glace');
-    glace6 = glace.create(1419,2372, 'glace');
-    glace7 = glace.create(1670,2143, 'glace');
-    glace8 = glace.create(2753,2001, 'glace');
-    glace9 = glace.create(2381,1745, 'glace');
+    glace.create(1400,5305, 'glace');
+    glace1 = glace.create(2410,4724, 'glace');
+    glace2 = glace.create(3481,4362, 'glace');
+    glace3 = glace.create(2438,374, 'glace');
+    glace4 = glace.create(2638,3426, 'glace');
+    glace5 = glace.create(2051,2913, 'glace');
+    glace6 = glace.create(1419,2313, 'glace');
+    glace7 = glace.create(1670,2084, 'glace');
+    glace8 = glace.create(2753,1942, 'glace');
+    glace9 = glace.create(2381,1686, 'glace');
 
 
     //plateformes fait
-    platforms.create(1781,1786, 'ground');
-    plateform1 = platforms.create(200, 5517, 'ground');
-    plateform2 = platforms.create(600,5517, 'ground');
-    plateform3 = platforms.create(1800,5517, 'ground');
-    plateform4 = platforms.create(2200,5517, 'ground');
-    plateform5 = platforms.create(2600,5517, 'ground');
-    plateform6 = platforms.create(3000,5517, 'ground');
-    plateform7 = platforms.create(3400,5517, 'ground');
-    plateform8 = platforms.create(4800,5817, 'ground');
-    plateform9 = platforms.create(4200,5817, 'ground');
-    plateform10 = platforms.create(2264,5022, 'ground');
-    plateform11 = platforms.create(3408,4612, 'ground');
-    plateform12 = platforms.create(2944, 4331, 'ground');
-    plateform13 = platforms.create(3514,3989, 'ground');
-    plateform14 = platforms.create(2838,3918, 'ground');
-    plateform15 = platforms.create(2397,2792, 'ground');
-    plateform16 = platforms.create(2070,2143, 'ground');
-    plateform17 = platforms.create(2381,1845, 'ground');
+    platforms.create(1981,1756, 'ground');
+    plateform1 = platforms.create(200 ,5457, 'ground');
+    plateform2 = platforms.create(600,5457, 'ground');
+    plateform3 = platforms.create(1800,5457, 'ground');
+    plateform4 = platforms.create(2200,5457, 'ground');
+    plateform5 = platforms.create(2600,5457, 'ground');
+    plateform6 = platforms.create(3000,5457, 'ground');
+    plateform7 = platforms.create(3400, 5457, 'ground');
+    plateform8 = platforms.create(4800,5457, 'ground');
+    plateform9 = platforms.create(4200,5457, 'ground');
+    plateform10 = platforms.create(2264,4962, 'ground');
+    plateform11 = platforms.create(3408,4552, 'ground');
+    plateform12 = platforms.create(2944,4271, 'ground');
+    plateform13 = platforms.create(3514,3929, 'ground');
+    plateform14 = platforms.create(2838,3858, 'ground');
+    plateform15 = platforms.create(2397,2732, 'ground');
+    plateform16 = platforms.create(2070,2083, 'ground');
+    plateform17 = platforms.create(2381,1785, 'ground');
 
     //powerup
     powerUp = this.physics.add.group();
 
     powerUp1 = powerUp.create(600,5300, 'powerup');
-    powerUp1 = powerUp.create(800,5300, 'powerup');
+    powerUp1 = powerUp.create(2550,2657, 'powerup');
 
     //Création des ennemis----------- 
     ennemis = this.physics.add.group();
 
-    ennemi = ennemis.create(400, 5300, 'ennemis');
-    ennemi2 = ennemis.create(50, 5300, 'ennemis');
+    ennemi = ennemis.create(1290, 2750, 'ennemis');
+    ennemi2 = ennemis.create(1804, 2839, 'ennemis');
     
     ennemi.setCollideWorldBounds(true);
     
@@ -545,10 +555,13 @@ function UX()
 }
 
 function update () //------------------------------------------
-
-
 {
-    
+    this.input.gamepad.once('connected',function (pad)
+    {
+        paddleConnected = true;
+        paddle = pad ;
+    });
+
     if(animAtk<2)
     {
         player.anims.play('attaquePlayer',true);
@@ -581,22 +594,22 @@ function update () //------------------------------------------
         if(passage == 1)
         {
             player.x = 122;
-            player.y = 5403;
+            player.y = 5353;
         }
         else if (passage == 2)
         {
             player.x = 3408;
-            player.y = 3875;
+            player.y = 3825;
         }
         else if (passage == 3)
         {
             player.x = 1227;
-            player.y = 2860;
+            player.y = 2830;
         }
         else
         {
             player.x = 122;
-            player.y = 5403;
+            player.y = 5353;
         }
 
         vie = 3;
@@ -605,6 +618,8 @@ function update () //------------------------------------------
 
 //Déplacements --------------------------------
 //Déplacement à gauche----------
+if(paddleConnected == false)
+{
     if (cursors.left.isDown)
     {
         facingLeft = true;
@@ -774,8 +789,26 @@ function update () //------------------------------------------
 //Frame d'invulnérabilité ----------
     invulnerable++;
     animAtk++;
+}
+if(paddleConnected == true)
+{
+    if (paddle.A)
+    {
+        a=true;
+    }
+    else
+    {
+        a=false
+    }
+
+    if(a == true)
+    {
+        player.setVelocityX(500);
+    }
+}
     deplacementEnnemi(ennemis);
     deplacementHitboxAttaque();
+
     
 }
 //Déplacements autres que le joueur ----------

@@ -1,0 +1,4 @@
+Déplacement : flèches directionnelles gauche et droite 
+Saut : Flèche directionnelle du haut 
+Grappin : Espace quand en dessous d'une plateforme 
+Attaques latérales : espace quand proche d'ennemis
