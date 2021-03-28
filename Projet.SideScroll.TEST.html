@@ -149,7 +149,11 @@ var piege46;
 var piege47;
 var piege48;
 var piege49;
-
+var powerUp;
+var powerUp1;
+var powerUp2;
+var antiVent = 1201;
+var dureeAntiVent = 1200;
 var heart1;
 var heart2;
 var heart3;
@@ -160,6 +164,7 @@ function preload ()//----------------------------------------
 {
     //
     this.load.image('heart','assets/heart.png');
+    this.load.image('powerup','assets/power_up.png');
     //checkpoint
     this.load.image('check','assets/checkpoint.png');
     //Plateformes et arrière-plan----------
@@ -320,6 +325,11 @@ function create ()//----------------------------------------
     plateform16 = platforms.create(2070,2143, 'ground');
     plateform17 = platforms.create(2381,1845, 'ground');
 
+    //powerup
+    powerUp = this.physics.add.group();
+
+    powerUp1 = powerUp.create(600,5300, 'powerup');
+    powerUp1 = powerUp.create(800,5300, 'powerup');
 
     //Création des ennemis----------- 
     ennemis = this.physics.add.group();
@@ -329,7 +339,7 @@ function create ()//----------------------------------------
     
     ennemi.setCollideWorldBounds(true);
     
-    
+
     // Propriétés physiques du player----------
     player.setBounce(0);
     player.setCollideWorldBounds(true);
@@ -415,6 +425,10 @@ function create ()//----------------------------------------
     this.physics.add.overlap(grappin,neige,Grappin);
     this.physics.add.overlap(grappin,platforms,Grappin);
     this.physics.add.overlap(grappin,glace,Grappin);
+    this.physics.add.collider(powerUp, platforms);
+    this.physics.add.collider(powerUp, neige);
+    this.physics.add.collider(powerUp, glace);
+    this.physics.add.overlap(player, powerUp,collectPowerUp, null, this);
     this.physics.add.collider(ennemis, platforms);
     this.physics.add.collider(ennemis, neige);
     this.physics.add.collider(ennemis, glace);
@@ -436,6 +450,10 @@ function piegeMortel(){
     vie =3;
 }
 
+function collectPowerUp(player,powerUp){
+    antiVent = 0;
+    powerUp.disableBody(true,true);
+}
 function CHECKPOINT1()
 {
     if(passage <1)
@@ -511,38 +529,17 @@ function update () //------------------------------------------
 
 
 {
-    /*function updateVie()
-    {
-        if (vie == 3 )
-        {
-            heart1.disableBody = false;
-            heart2.disableBody = false ;
-            heart3.disableBody = false;
-        }
-        else if (vie == 2 )
-        {
-            heart1.disableBody = true;
-            heart2.disableBody = false;
-            heart3.disableBody = false;
-            console.log('Entrée dans le else if')
-        }
-        else if (vie == 2 )
-        {
-            heart1.disableBody = true;
-            heart2.disableBody = true;
-            heart3.disableBody = false;
-        }
-    }*/
+    
 
     UX();
     //Caméra 
     this.cameras.main.startFollow(player, false,0,0,-225,100);
     //Vent----------
-    if (player.body.position.y < haut && nonFriction == false)// Vent en haut de la carte
+    if (player.body.position.y < haut && nonFriction == false && antiVent > dureeAntiVent)// Vent en haut de la carte
     {
         player.setGravityX(5000)
     }
-    else if (player.body.position.y < bas &&  nonFriction == false) // Vent au milieu de la carte 
+    else if (player.body.position.y < bas &&  nonFriction == false && antiVent > dureeAntiVent) // Vent au milieu de la carte 
     {
         player.setGravityX(2500)
     }
@@ -609,7 +606,7 @@ function update () //------------------------------------------
         }
         else if (nonFriction == true )
         {
-            if (player.body.position.y < haut)
+            if (player.body.position.y < haut && antiVent > dureeAntiVent)
             {
                 (player.body.touching.down == true)
             {
@@ -617,7 +614,7 @@ function update () //------------------------------------------
             }
                 player.setAccelerationX(-60);
             }
-            else if (player.body.position.y < bas)
+            else if (player.body.position.y < bas && antiVent > dureeAntiVent)
             {
                 (player.body.touching.down == true)
             {
@@ -654,12 +651,12 @@ function update () //------------------------------------------
         }
         else if (nonFriction == true )
         {
-            if (player.body.position.y < haut)
+            if (player.body.position.y < haut  && antiVent > dureeAntiVent)
             {
                 player.anims.play('right',true);
                 player.setAccelerationX(140);
             }
-            else if (player.body.position.y < bas)
+            else if (player.body.position.y < bas  && antiVent > dureeAntiVent)
             {
                 player.anims.play('right',true);
                 player.setAccelerationX(120);
@@ -690,7 +687,7 @@ function update () //------------------------------------------
         }
         else if (nonFriction == true)
         {
-            if (player.body.position.y < haut)
+            if (player.body.position.y < haut  && antiVent > dureeAntiVent)
             {
                 if (player.body.touching.down == true)
             {
@@ -703,7 +700,7 @@ function update () //------------------------------------------
             }
                 player.setAccelerationX(40);
             }
-            else if (player.body.position.y < bas)
+            else if (player.body.position.y < bas  && antiVent > dureeAntiVent)
             {
                 if (player.body.touching.down == true)
             {
@@ -746,6 +743,7 @@ function update () //------------------------------------------
         }
     }
     compteurRebond++;
+    antiVent++;
     if (compteurRebond < 50)
     {
         rebond = false;
@@ -755,6 +753,7 @@ function update () //------------------------------------------
     invulnerable++;
     deplacementEnnemi(ennemis);
     deplacementHitboxAttaque();
+    
 }
 //Déplacements autres que le joueur ----------
 
